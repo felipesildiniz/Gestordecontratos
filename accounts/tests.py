@@ -19,6 +19,19 @@ Usuario = get_user_model()
 SENHA = "Senha-Forte-123!"
 
 
+def entrar(cliente, login):
+    """Abre a sessão sem passar pela tela de login.
+
+    O django-axes exige um "request" em authenticate(), e o client.login() do
+    Django não o fornece; por isso os testes usam force_login. A senha e o
+    bloqueio são testados à parte, pela própria tela de login.
+    """
+    cliente.force_login(
+        Usuario.objects.get(username=login),
+        backend="django.contrib.auth.backends.ModelBackend",
+    )
+
+
 def criar_usuario(login, perfil):
     call_command("criar_usuario", usuario=login, perfil=perfil, senha=SENHA)
     return Usuario.objects.get(username=login)
@@ -99,19 +112,19 @@ class LoginTests(TestCase):
         self.assertNotIn("_auth_user_id", self.client.session)
 
     def test_inicio_mostra_o_perfil(self):
-        self.client.login(username="ana", password=SENHA)
+        entrar(self.client, "ana")
         resposta = self.client.get(reverse("home"))
         self.assertEqual(resposta.status_code, 200)
         self.assertEqual(resposta.context["perfil"], ADMIN)
 
     def test_sair_encerra_a_sessao(self):
-        self.client.login(username="ana", password=SENHA)
+        entrar(self.client, "ana")
         resposta = self.client.post(reverse("logout"))
         self.assertRedirects(resposta, reverse("login"))
         self.assertNotIn("_auth_user_id", self.client.session)
 
     def test_sair_por_get_nao_e_permitido(self):
-        self.client.login(username="ana", password=SENHA)
+        entrar(self.client, "ana")
         resposta = self.client.get(reverse("logout"))
         self.assertEqual(resposta.status_code, 405)
 
@@ -119,13 +132,13 @@ class LoginTests(TestCase):
 class AreaAdministrativaTests(TestCase):
     def test_admin_acessa_lista_de_usuarios(self):
         criar_usuario("ana", "admin")
-        self.client.login(username="ana", password=SENHA)
+        entrar(self.client, "ana")
         resposta = self.client.get("/admin/auth/user/")
         self.assertEqual(resposta.status_code, 200)
 
     def test_consulta_nao_acessa_area_administrativa(self):
         criar_usuario("beto", "consulta")
-        self.client.login(username="beto", password=SENHA)
+        entrar(self.client, "beto")
         resposta = self.client.get("/admin/auth/user/")
         self.assertEqual(resposta.status_code, 302)
         self.assertIn("/admin/login/", resposta.url)

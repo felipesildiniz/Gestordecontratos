@@ -153,5 +153,8 @@ AXES_LOCKOUT_PARAMETERS = ["username"]
 AXES_RESET_ON_SUCCESS = True
 AXES_LOCKOUT_TEMPLATE = "bloqueado.html"
 AXES_HTTP_RESPONSE_CODE = 403
+# O aviso axes.W006 pede também o IP; ele é omitido de propósito (ver acima).
+# Com o bloqueio só por usuário, girar o navegador ou os cookies não burla o limite.
+SILENCED_SYSTEM_CHECKS = ["axes.W006"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
