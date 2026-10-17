@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Início — Gestor de Contratos{% endblock %}
+{% block corpo %}
+<header class="topo">
+  <strong>Gestor de Contratos</strong>
+  <div class="topo-direita">
+    <span>{{ request.user.get_full_name|default:request.user.username }}</span>
+    <span class="perfil">{{ perfil|default:"sem perfil" }}</span>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="link">Sair</button>
+    </form>
+  </div>
+</header>
+<main class="conteudo">
+  <h1>Bem-vindo</h1>
+  {% if perfil %}
+    <p>O sistema está em construção. Os cadastros serão acrescentados nas próximas etapas.</p>
+    {% if perfil == "Admin" %}
+      <p><a href="{% url 'admin:index' %}">Gerenciar usuários</a></p>
+    {% endif %}
+  {% else %}
+    <p class="erro">Seu usuário ainda não tem um perfil de acesso. Procure o administrador do sistema.</p>
+  {% endif %}
+</main>
+{% endblock %}
