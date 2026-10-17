@@ -4,6 +4,7 @@ Os valores que mudam de um computador para outro (senhas, endereços) ficam no
 arquivo .env, que não deve ser compartilhado. Veja .env.example.
 """
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 from .env import booleano, carregar_env, lista, texto
@@ -35,6 +36,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "axes",
     "accounts",
 ]
 
@@ -47,6 +49,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    # Deve ser o último: bloqueia tentativas repetidas de senha (E4.2).
+    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -105,6 +109,10 @@ STORAGES = {
     "staticfiles": {"BACKEND": "whitenoise.storage.CompressedStaticFilesStorage"},
 }
 
+# Pasta dos PDFs enviados ao sistema (D-023). O backup (E4.1) copia esta pasta.
+MEDIA_URL = "arquivos/"
+MEDIA_ROOT = Path(texto("ARQUIVOS_PASTA") or BASE_DIR / "media")
+
 # Login e sessão.
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "home"
@@ -112,13 +120,38 @@ LOGOUT_REDIRECT_URL = "login"
 SESSION_COOKIE_AGE = 8 * 60 * 60  # 8 horas sem uso encerram a sessão
 SESSION_SAVE_EVERY_REQUEST = True
 
-# O sistema roda em rede interna, sem HTTPS por enquanto. Se um dia houver
-# HTTPS, defina DJANGO_USAR_HTTPS=True no .env.
+# HTTPS (E4.2, D-024). Na internet, defina DJANGO_USAR_HTTPS=True: o sistema
+# passa a redirecionar HTTP para HTTPS, a marcar cookies como seguros e a
+# enviar o cabeçalho HSTS. Atrás do proxy do Railway confia-se no cabeçalho
+# X-Forwarded-Proto. Em instalação local sem HTTPS, deixe False.
 USAR_HTTPS = booleano("DJANGO_USAR_HTTPS", False)
 SESSION_COOKIE_SECURE = USAR_HTTPS
 CSRF_COOKIE_SECURE = USAR_HTTPS
 if USAR_HTTPS:
-    # Atrás de um proxy HTTPS (ex.: Railway), confia no cabeçalho do proxy.
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+    # Nos testes automáticos (que usam HTTP) o redirecionamento fica desligado;
+    # ele é testado à parte, com override_settings.
+    SECURE_SSL_REDIRECT = not TESTANDO
+    # Começa em 1 hora; depois de confirmar que tudo funciona em HTTPS,
+    # aumente DJANGO_HSTS_SEGUNDOS (ex.: 31536000 = 1 ano).
+    SECURE_HSTS_SECONDS = int(texto("DJANGO_HSTS_SEGUNDOS") or 3600)
+SESSION_COOKIE_HTTPONLY = True
+SECURE_REFERRER_POLICY = "same-origin"
+X_FRAME_OPTIONS = "DENY"
+
+# Limite de tentativas de senha (E4.2, django-axes). Depois de 5 erros seguidos
+# para o mesmo usuário, o login desse usuário fica bloqueado por 30 minutos.
+# O bloqueio é por usuário (não por IP) porque, atrás do proxy do Railway, o
+# IP de quem acessa não é confiável sem configuração extra.
+AUTHENTICATION_BACKENDS = [
+    "axes.backends.AxesStandaloneBackend",
+    "django.contrib.auth.backends.ModelBackend",
+]
+AXES_FAILURE_LIMIT = 5
+AXES_COOLOFF_TIME = timedelta(minutes=30)
+AXES_LOCKOUT_PARAMETERS = ["username"]
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_TEMPLATE = "bloqueado.html"
+AXES_HTTP_RESPONSE_CODE = 403
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

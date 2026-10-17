@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management import call_command
 from django.core.management.base import CommandError
-from django.test import SimpleTestCase, TestCase
+from django.test import Client, SimpleTestCase, TestCase, override_settings
 from django.urls import reverse
 
 from config.env import booleano, carregar_env, lista, texto
@@ -151,6 +151,108 @@ class CriarUsuarioComandoTests(TestCase):
         with self.assertRaises(CommandError):
             call_command("criar_usuario", usuario="caio", perfil="consulta", senha="12345")
         self.assertFalse(Usuario.objects.filter(username="caio").exists())
+
+
+class LimiteDeTentativasTests(TestCase):
+    """E4.2: depois de 5 senhas erradas o usuário fica bloqueado (django-axes)."""
+
+    def setUp(self):
+        criar_usuario("ana", "admin")
+        criar_usuario("beto", "consulta")
+
+    def _errar(self, usuario, vezes):
+        for _ in range(vezes):
+            self.client.post(reverse("login"), {"username": usuario, "password": "errada"})
+
+    def test_quatro_erros_nao_bloqueiam(self):
+        self._errar("ana", 4)
+        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self.assertRedirects(resposta, reverse("home"))
+
+    def test_cinco_erros_bloqueiam_ate_com_a_senha_certa(self):
+        self._errar("ana", 5)
+        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self.assertEqual(resposta.status_code, 403)
+        self.assertContains(resposta, "Acesso bloqueado", status_code=403)
+        self.assertNotIn("_auth_user_id", self.client.session)
+
+    def test_bloqueio_de_um_usuario_nao_afeta_outro(self):
+        self._errar("ana", 5)
+        resposta = self.client.post(reverse("login"), {"username": "beto", "password": SENHA})
+        self.assertRedirects(resposta, reverse("home"))
+
+    def test_login_correto_zera_a_contagem(self):
+        self._errar("ana", 4)
+        self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self.client.post(reverse("logout"))
+        self._errar("ana", 4)
+        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self.assertRedirects(resposta, reverse("home"))
+
+    def test_area_administrativa_tambem_e_protegida(self):
+        for _ in range(5):
+            self.client.post("/admin/login/", {"username": "ana", "password": "errada"})
+        resposta = self.client.post("/admin/login/", {"username": "ana", "password": SENHA})
+        self.assertEqual(resposta.status_code, 403)
+
+    def test_desbloqueio_pelo_comando_do_axes(self):
+        self._errar("ana", 5)
+        call_command("axes_reset")
+        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self.assertRedirects(resposta, reverse("home"))
+
+
+class HttpsTests(TestCase):
+    """E4.2: com HTTPS ativo, o HTTP é redirecionado e há cabeçalho HSTS."""
+
+    @override_settings(SECURE_SSL_REDIRECT=True)
+    def test_http_e_redirecionado_para_https(self):
+        resposta = Client().get(reverse("login"))
+        self.assertEqual(resposta.status_code, 301)
+        self.assertTrue(resposta.url.startswith("https://"))
+
+    @override_settings(SECURE_SSL_REDIRECT=True, SECURE_HSTS_SECONDS=3600)
+    def test_https_funciona_e_envia_hsts(self):
+        resposta = Client().get(reverse("login"), secure=True)
+        self.assertEqual(resposta.status_code, 200)
+        self.assertIn("max-age=3600", resposta["Strict-Transport-Security"])
+
+    @override_settings(SESSION_COOKIE_SECURE=True, CSRF_COOKIE_SECURE=True)
+    def test_cookies_sao_marcados_como_seguros(self):
+        criar_usuario("ana", "admin")
+        cliente = Client()
+        resposta = cliente.post(
+            reverse("login"), {"username": "ana", "password": SENHA}, secure=True
+        )
+        self.assertTrue(resposta.cookies["sessionid"]["secure"])
+        self.assertTrue(resposta.cookies["sessionid"]["httponly"])
+
+    def test_pagina_nao_pode_ser_colocada_em_moldura(self):
+        resposta = self.client.get(reverse("login"))
+        self.assertEqual(resposta["X-Frame-Options"], "DENY")
+
+
+class VerificarArmazenamentoTests(SimpleTestCase):
+    def test_cria_marca_e_depois_reconhece(self):
+        import tempfile
+        from io import StringIO
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as pasta:
+            with override_settings(MEDIA_ROOT=Path(pasta) / "arquivos"):
+                primeira = StringIO()
+                call_command("verificar_armazenamento", stdout=primeira)
+                self.assertIn("criada agora", primeira.getvalue())
+                segunda = StringIO()
+                call_command("verificar_armazenamento", stdout=segunda)
+                self.assertIn("persistente", segunda.getvalue())
+
+    def test_pasta_sem_permissao_gera_erro(self):
+        from pathlib import Path
+
+        with override_settings(MEDIA_ROOT=Path("/proc/nao-pode-gravar")):
+            with self.assertRaises(CommandError):
+                call_command("verificar_armazenamento")
 
 
 class LeituraDoEnvTests(SimpleTestCase):

@@ -3,3 +3,4 @@ psycopg[binary]>=3.2,<4
 waitress>=3.0,<4
 whitenoise>=6.7,<7
 tzdata
+django-axes>=7.0,<9
