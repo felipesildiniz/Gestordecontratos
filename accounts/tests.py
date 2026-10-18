@@ -166,6 +166,91 @@ class CriarUsuarioComandoTests(TestCase):
         self.assertFalse(Usuario.objects.filter(username="caio").exists())
 
 
+class StaffAcompanhaPerfilAdminTests(TestCase):
+    """P-016: entrar no grupo Admin concede is_staff; sair retira."""
+
+    def setUp(self):
+        self.admin = Group.objects.get(name=ADMIN)
+        self.consulta = Group.objects.get(name=CONSULTA)
+
+    def novo(self, login, **extra):
+        return Usuario.objects.create_user(login, password=SENHA, **extra)
+
+    def staff(self, usuario):
+        usuario.refresh_from_db()
+        return usuario.is_staff
+
+    def test_adicionar_ao_grupo_admin_concede_staff(self):
+        u = self.novo("a1")
+        self.assertFalse(self.staff(u))
+        u.groups.add(self.admin)
+        self.assertTrue(self.staff(u))
+
+    def test_set_de_grupos_como_faz_o_formulario_do_admin(self):
+        u = self.novo("a2")
+        u.groups.set([self.admin])
+        self.assertTrue(self.staff(u))
+
+    def test_pelo_lado_do_grupo_tambem(self):
+        u = self.novo("a3")
+        self.admin.user_set.add(u)
+        self.assertTrue(self.staff(u))
+
+    def test_consulta_nao_concede_staff(self):
+        u = self.novo("c1")
+        u.groups.add(self.consulta)
+        self.assertFalse(self.staff(u))
+
+    def test_remover_do_grupo_admin_retira_staff(self):
+        u = self.novo("a4")
+        u.groups.add(self.admin)
+        u.groups.remove(self.admin)
+        self.assertFalse(self.staff(u))
+
+    def test_trocar_admin_por_consulta_retira_staff(self):
+        u = self.novo("a5")
+        u.groups.set([self.admin])
+        u.groups.set([self.consulta])
+        self.assertFalse(self.staff(u))
+
+    def test_clear_retira_staff(self):
+        u = self.novo("a6")
+        u.groups.add(self.admin)
+        u.groups.clear()
+        self.assertFalse(self.staff(u))
+
+    def test_clear_pelo_lado_do_grupo_retira_staff(self):
+        u1, u2 = self.novo("a7"), self.novo("a8")
+        self.admin.user_set.add(u1, u2)
+        self.admin.user_set.clear()
+        self.assertFalse(self.staff(u1))
+        self.assertFalse(self.staff(u2))
+
+    def test_superusuario_nao_perde_staff(self):
+        u = Usuario.objects.create_superuser("root", password=SENHA)
+        u.groups.add(self.admin)
+        u.groups.remove(self.admin)
+        self.assertTrue(self.staff(u))
+
+    def test_continua_admin_se_sair_so_de_outro_grupo(self):
+        u = self.novo("a9")
+        u.groups.add(self.admin, self.consulta)
+        u.groups.remove(self.consulta)
+        self.assertTrue(self.staff(u))
+
+    def test_staff_dado_a_mao_a_quem_nao_e_admin_nao_e_mexido(self):
+        u = self.novo("s1", is_staff=True)
+        u.groups.add(self.consulta)
+        u.groups.remove(self.consulta)
+        self.assertTrue(self.staff(u))
+
+    def test_novo_admin_acessa_a_area_administrativa(self):
+        u = self.novo("novo_admin")
+        u.groups.set([self.admin])
+        entrar(self.client, "novo_admin")
+        self.assertEqual(self.client.get("/admin/auth/user/").status_code, 200)
+
+
 class LimiteDeTentativasTests(TestCase):
     """E4.2: depois de 5 senhas erradas o usuário fica bloqueado (django-axes)."""
 

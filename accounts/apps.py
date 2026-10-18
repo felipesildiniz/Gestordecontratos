@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from django.db.models.signals import post_migrate
+from django.db.models.signals import m2m_changed, post_migrate
 
 
 def _criar_perfis_apos_migracao(sender, using="default", **kwargs):
@@ -19,4 +19,14 @@ class AccountsConfig(AppConfig):
             _criar_perfis_apos_migracao,
             sender=self,
             dispatch_uid="accounts.criar_perfis",
+        )
+        # Quem entra no grupo Admin ganha acesso à área administrativa (P-016).
+        from django.contrib.auth import get_user_model
+
+        from .perfis import sincronizar_staff
+
+        m2m_changed.connect(
+            sincronizar_staff,
+            sender=get_user_model().groups.through,
+            dispatch_uid="accounts.sincronizar_staff",
         )

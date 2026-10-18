@@ -56,3 +56,59 @@ def garantir_perfis(using="default"):
     # serão acrescentadas aqui nas próximas etapas.
     grupos[CONSULTA].permissions.clear()
     return grupos
+
+
+def sincronizar_staff(sender, instance, action, reverse, pk_set, using="default", **kwargs):
+    """Mantém o acesso à área administrativa (is_staff) igual ao perfil Admin.
+
+    Resolve P-016: antes era preciso marcar "staff" à mão ao criar um Admin em
+    /admin/. Agora, quem entra no grupo Admin, por qualquer caminho (formulário
+    do admin, shell, comando), recebe is_staff; quem sai do grupo Admin perde,
+    exceto superusuário. O perfil Consulta nunca concede staff.
+
+    Ligada ao sinal m2m_changed de User.groups (veja accounts/apps.py).
+    """
+    from django.contrib.auth import get_user_model
+    from django.contrib.auth.models import Group
+
+    Usuario = get_user_model()
+    qs = Usuario.objects.using(using)
+
+    if action == "pre_clear":
+        # Depois do clear não dá mais para saber quem estava no grupo.
+        if reverse and instance.name == ADMIN:
+            instance._admins_antes_do_clear = list(
+                instance.user_set.values_list("pk", flat=True)
+            )
+        return
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+
+    def revogar(ids):
+        # Perde staff quem não é superusuário e não está mais no grupo Admin.
+        ids = [
+            pk for pk in ids
+            if not Usuario.objects.using(using).filter(pk=pk, groups__name=ADMIN).exists()
+        ]
+        qs.filter(pk__in=ids, is_superuser=False).update(is_staff=False)
+
+    if not reverse:  # instance é o usuário; pk_set são grupos
+        if action == "post_add":
+            if Group.objects.using(using).filter(pk__in=pk_set or [], name=ADMIN).exists():
+                qs.filter(pk=instance.pk).update(is_staff=True)
+                instance.is_staff = True
+        else:
+            if action == "post_clear" or Group.objects.using(using).filter(
+                pk__in=pk_set or [], name=ADMIN
+            ).exists():
+                revogar([instance.pk])
+                instance.is_staff = qs.filter(pk=instance.pk, is_staff=True).exists()
+    else:  # instance é o grupo; pk_set são usuários
+        if instance.name != ADMIN:
+            return
+        if action == "post_add":
+            qs.filter(pk__in=pk_set or []).update(is_staff=True)
+        elif action == "post_remove":
+            revogar(list(pk_set or []))
+        else:  # post_clear
+            revogar(getattr(instance, "_admins_antes_do_clear", []))
