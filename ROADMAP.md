@@ -54,5 +54,6 @@ A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e 
 - **Pendências:** decisões do responsável listadas na D-024 (hospedagem definitiva, domínio, responsável pelas contas, custo).
 - **Feito (2026-10-17):** itens 1 (HTTPS, D-026), 2 (limite de tentativas, D-026) e 3 (volume `/data`, comando `verificar_armazenamento`, persistência comprovada entre deploys). 34 testes OK no Railway.
 - **Feito também (2026-10-18):** item 4, backup manual baixável (D-027): `Dockerfile` com `pg_dump` 18, tela "Backup" só para Admin, `.zip` sem `.env`; 66 testes OK no Railway.
-- **Falta:** 5 (novos Admin com acesso à área administrativa, P-016), 6 (remover `SENHA_TESTE` e usuários de teste da produção), 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano; restauração de teste do `.zip` baixado.
+- **Feito (2026-10-18):** item 4 (backup manual baixável, confirmado em uso real e restauração real provada no Railway) e item 5 (staff automático para Admin, P-016; 83 testes OK no Railway).
+- **Falta:** 6 (remover `SENHA_TESTE` e usuários de teste da produção), 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano; restauração de teste do `.zip` baixado.
 - **Próxima ação:** o responsável testa o botão de backup no navegador e confirma; depois restauração de teste e itens 5 a 8.

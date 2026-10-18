@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2 item 5: novo Admin recebe acesso à área administrativa (P-016)
+- **Implementado:** `sincronizar_staff` em `accounts/perfis.py`, ligado ao sinal `m2m_changed` de `User.groups` em `accounts/apps.py`. Entrar no grupo Admin concede `is_staff`; sair retira (exceto superusuário); Consulta nunca concede; `is_staff` dado à mão a quem não é Admin não é mexido.
+- **Testes:** +12 em `accounts/tests.py` (add, set, lado do grupo, remove, clear nos dois lados, superusuário, outro grupo, acesso real a `/admin/`). 83/83 no Railway (deploy `9f5beb98`, commit `7a3c542`).
+- **Arquivos:** `accounts/perfis.py`, `accounts/apps.py`, `accounts/tests.py`.
+
 ## 2026-10-18 — E4.2: restauração de teste do backup real no Railway
 - **Novo:** `manutencao/management/commands/conferir_restauracao.py` (+3 testes) e `manutencao` registrado em `INSTALLED_APPS`.
 - **Resultado:** o `.zip` baixado pelo responsável restaurou num banco temporário do Railway (pg 18); contagens iguais às do banco em uso; banco temporário removido (`RESTAURACAO_OK`). 71/71 testes.

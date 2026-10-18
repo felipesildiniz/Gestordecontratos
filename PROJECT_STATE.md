@@ -9,7 +9,7 @@ Sistema web para gerenciamento de contratos administrativos, atas, vigências, s
 ## Etapa atual
 - **Concluídas:** E1 — Fundação; E2 — Requisitos e decisão de stack; E3 — Modelo de dados; E4 — Esqueleto do projeto (validada no Railway; falta confirmar no Windows).
 - **E4.1 — Backup local: PRECISA REVISÃO.** Código e restauração testados com PostgreSQL 16 no Linux (20/20); falta validar os .bat e o agendamento no servidor Windows.
-- **E4.2 — Preparar para a internet: EM ANDAMENTO** (itens 1 a 4 de 8 feitos: HTTPS, limite de login, PDFs persistentes e backup manual baixável); faltam 5 a 8. Depois: E5 — Cadastro de contratos.
+- **E4.2 — Preparar para a internet: EM ANDAMENTO** (itens 1 a 5 de 8 feitos: HTTPS, limite de login, PDFs persistentes, backup manual baixável e staff automático do Admin); faltam 6 a 8. Depois: E5 — Cadastro de contratos.
 
 ## Diagnóstico
 | Item | Resultado |
@@ -47,18 +47,18 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - **P-013** (RESOLVIDA em 2026-10-18) O código oficial está no GitHub `felipesildiniz/gestordecontratos` (D-024); o .zip deixou de ser a única cópia.
 - **P-014** (REDUZIDA) A E4 foi executada no Railway com 22/22 testes OK, mas ainda não no servidor Windows com Python 3.12. Mitigação: `executar_testes.bat` no servidor.
 - **P-015** (REDUZIDA) HTTPS obrigatório e limite de tentativas implementados (D-026). Resta o bloqueio ser por usuário, não por IP, o que permite negar acesso a uma conta de propósito.
-- **P-016** Ao criar um novo Admin pela área administrativa, é preciso marcar "staff" manualmente (D-020).
+- **P-016** (RESOLVIDA) Quem entra no grupo Admin recebe `is_staff` automaticamente, por qualquer caminho; ao sair do grupo perde (superusuário não). Implementado em `accounts/perfis.py` (`sincronizar_staff`, sinal `m2m_changed`), 12 testes, 83/83 no Railway (deploy `9f5beb98`).
 - **P-017** O sistema não inicia sozinho com o Windows (D-020).
 - **P-018** (RESOLVIDA) Teste no Railway feito em 2026-10-17: projeto `gestor-contratos-teste`, domínio https://gestor-production-5955.up.railway.app, só dados de teste. A cópia no GitHub e o projeto Railway devem ser apagados quando não forem mais úteis (D-021). O Railway usa Python 3.13; o Windows planejado usa 3.12.
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
 - ETAPA: E4.2 — Preparar para a internet
-- STATUS: EM ANDAMENTO (itens 1 a 4 de 8)
+- STATUS: EM ANDAMENTO (itens 1 a 5 de 8)
 - ÚLTIMO PONTO CONCLUÍDO: item 4, backup manual baixável (D-027): `Dockerfile` com `postgresql-client-18`; tela "Backup" só para Admin que gera o `.zip` (banco + PDFs + manifesto SHA-256, sem `.env` nem código) e o baixa; `nucleo` com projeto opcional. **66/66 testes OK no Railway** (deploy `28815753`, commit `9f6ecc0`), inclusive o que gera o `.zip` de verdade com `pg_dump` 18 e o que restaura (E4.1) com `pg_restore` 18. Volume `/data` continua persistente após a troca de build. `INSTALACAO_NUVEM.md` criado (item 8, primeira versão).
 - **2026-10-18 (verificado pelo responsável):** o site abriu com `ERR_TOO_MANY_REDIRECTS` (waitress descartava `X-Forwarded-Proto`); corrigido em `serve.py` (commit `e2ea16d`, deploy `91a3a4fa`, 68/68 testes). Depois disso o responsável entrou no sistema e **baixou o backup pelo botão: item 4 verificado em uso real**. **Conferência do `.zip` real (2026-10-18):** zip íntegro; `banco.dump` (44442 bytes) e `arquivos.zip` (165 bytes, só a marca do armazenamento: ainda não há PDFs) batem com o SHA-256 do manifesto; sem `.env` nem código; o dump traz as 14 tabelas do sistema (auth, axes, django). **Restauração desse arquivo EXECUTADA no Railway (pg 18, 2026-10-18, deploy `25f0525a`):** novo comando `conferir_restauracao` (extrai o `.zip`, confere SHA-256, restaura num banco temporário, compara com o banco em uso, apaga o temporário). Resultado: `RESTAURACAO_OK`; auth_user 2/2 (admin_teste, consulta_teste), auth_group 2/2, auth_permission 40/40, django_migrations 28/28, django_content_type 10/10; 1 arquivo de armazenamento extraído. O comando exige `manutencao` em `INSTALLED_APPS` (corrigido). Branch temporária `teste-restauracao` (com o `.zip` de teste) apagada; o `.zip` nunca entrou na `main`.
-- PONTO EXATO ONDE PAROU: o botão da tela de backup ainda não foi usado por uma pessoa no navegador; não houve restauração de um `.zip` baixado de verdade.
+- PONTO EXATO ONDE PAROU: item 5 concluído e publicado (commit `7a3c542`, 83/83 testes no Railway). Falta o responsável criar um Admin de verdade em `/admin/` para ver o `staff` marcado sozinho (os testes automáticos já cobrem). Próximo: item 6.
 - ARQUIVOS ALTERADOS: Dockerfile, .dockerignore, manutencao/nucleo.py, manutencao/web.py, manutencao/urls.py, manutencao/test_nucleo.py (+4 testes), manutencao/test_web.py (+7), config/urls.py, templates/backup.html, templates/home.html, INSTALACAO_NUVEM.md, DECISIONS, ROADMAP, PROJECT_STATE, CHANGELOG.
-- O QUE FALTA: item 5 (novo Admin pela área administrativa com acesso `staff`, P-016); 6 (remover `SENHA_TESTE` e usuários de teste); 7 (separar teste e produção); 8 (completar o guia); HSTS de 1 ano; restauração de teste do `.zip` baixado.
+- O QUE FALTA: 6 (remover `SENHA_TESTE` e usuários de teste); 7 (separar teste e produção); 8 (completar o guia); HSTS de 1 ano; restauração de teste do `.zip` baixado.
 - ERROS: nenhum aberto. No caminho: um teste meu esperava 4 arquivos no .zip em vez de 3 (corrigido); enquanto falhou, o serviço reiniciou em laço (o comando de início roda os testes antes de subir).
-- PRÓXIMA AÇÃO: o responsável abre `https://gestor-production-5955.up.railway.app`, entra como `admin_teste`, vai em "Backup dos dados", baixa o `.zip` e me conta se funcionou; depois fazemos a restauração de teste e os itens 5 a 8.
+- PRÓXIMA AÇÃO: item 6 (remover `SENHA_TESTE` e os usuários de teste da produção, depois de o responsável ter o seu Admin real), depois 7 e 8.
