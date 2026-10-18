@@ -14,7 +14,8 @@ accounts/   login e saída, perfis Admin/Consulta, comando criar_usuario, testes
 templates/  base, login, início
 static/     CSS
 serve.py    servidor de produção (waitress)
-manutencao/ backup e restauração (E4.1)
+manutencao/ backup e restauração (E4.1) e tela de backup para Admin (web.py, urls.py)
+Dockerfile imagem do Railway (Python 3.13 + cliente PostgreSQL 18), INSTALACAO_NUVEM.md
 *.bat       criar_ambiente, iniciar_servidor, executar_testes (Windows)
 ```
 
