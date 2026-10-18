@@ -9,6 +9,15 @@ Registro cronológico, mais recente primeiro.
 - **GitHub:** `add_repo` continua recusado (a conta do GitHub não está vinculada ao Claude Code); os envios seguem pela ferramenta de GitHub, arquivo a arquivo.
 - **Próxima ação:** confirmação do mecanismo; depois implementação e teste no Railway.
 
+## 2026-10-18 — E4.2 item 4: backup manual baixável (EM ANDAMENTO)
+- **Decisão (D-027):** no Hobby o backup do Railway é só manual; a cópia vai para o computador do responsável por uma tela "Backup" do sistema (mecanismo recomendado, adotado).
+- **GitHub:** o repositório foi adicionado à sessão (`add_repo`); o código oficial passa a ser enviado por `git push` do clone `/home/claude/gestordecontratos`. Enviados: documentos de continuidade, E4.1 (já estava lá) e esta etapa.
+- **Código:** `Dockerfile` (Python 3.13 + `postgresql-client-18`) e `.dockerignore`; `manutencao/nucleo.py` (projeto.zip opcional; `verificar_backup` só exige banco e PDFs); `manutencao/web.py`, `urls.py`, `templates/backup.html` (tela só para Admin, uma geração por vez, zip temporário apagado depois do envio); link "Backup dos dados" na página inicial do Admin; `INSTALACAO_NUVEM.md`.
+- **Testes:** local, com PostgreSQL 16: 24/24 do núcleo. **Railway: 66/66 OK** (22 + 12 da E4.2 + 24 do núcleo + 7 da tela e 1 extra), com `pg_dump`/`pg_restore` 18 reais. O `.zip` gerado contém só `banco.dump`, `arquivos.zip` e `manifest.json`.
+- **Erros e correções:** (1) meu teste esperava 4 arquivos no zip; são 3. Enquanto falhou, o serviço reiniciou em laço (ele roda os testes antes de subir). (2) Os logs do Railway são muito extensos: usar filtros.
+- **Não verificado:** clique real no botão pelo navegador; restauração de um `.zip` baixado; meu acesso de rede ao domínio do Railway é bloqueado.
+- **Próxima ação:** o responsável testa o botão; restauração de teste; itens 5 a 8 da E4.2.
+
 ## 2026-10-17 — E4.2 itens 1 a 3: HTTPS, limite de tentativas e PDFs persistentes (EM ANDAMENTO)
 - **Decisões:** D-025 (Railway definitivo; Hobby agora, Pro depois) e D-026 (segurança de acesso).
 - **Código:** `config/settings.py` (HTTPS, HSTS, cookies, cabeçalhos, `django-axes`, `MEDIA_ROOT`), `templates/bloqueado.html`, `accounts/management/commands/verificar_armazenamento.py`, `accounts/tests.py` (12 testes novos e `force_login`), `requirements.txt` (`django-axes`), `.env.example`.

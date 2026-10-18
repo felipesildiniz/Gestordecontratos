@@ -9,7 +9,7 @@ Sistema web para gerenciamento de contratos administrativos, atas, vigências, s
 ## Etapa atual
 - **Concluídas:** E1 — Fundação; E2 — Requisitos e decisão de stack; E3 — Modelo de dados; E4 — Esqueleto do projeto (validada no Railway; falta confirmar no Windows).
 - **E4.1 — Backup local: PRECISA REVISÃO.** Código e restauração testados com PostgreSQL 16 no Linux (20/20); falta validar os .bat e o agendamento no servidor Windows.
-- **E4.2 — Preparar para a internet: EM ANDAMENTO** (itens 1 a 3 de 8 feitos); depois E5 — Cadastro de contratos.
+- **E4.2 — Preparar para a internet: EM ANDAMENTO** (itens 1 a 4 de 8 feitos: HTTPS, limite de login, PDFs persistentes e backup manual baixável); faltam 5 a 8. Depois: E5 — Cadastro de contratos.
 
 ## Diagnóstico
 | Item | Resultado |
@@ -40,11 +40,11 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 ## Problemas e riscos registrados
 - **P-004** Os documentos ficam na raiz da pasta do projeto; no Project do claude.ai existem cópias em `claude/` (não é possível gravar na raiz do Project).
 - **P-005** (REDUZIDA) Backup implementado na E4.1 (D-022): diário às 02:00, 30 cópias, restauração testada. Seguem abertos (D-012): qual computador será o servidor, **onde fica o segundo local** (`BACKUP_PASTA_COPIA`, disco externo ou outro computador) e quem confere os backups. Até validar no Windows e definir o segundo local, **só dados de teste**.
-- **P-020** (REDUZIDA) Na internet (D-024) ainda faltam: backup em nuvem, remoção da senha e dos usuários de teste, separação teste/produção e novos Admin com acesso à área administrativa (P-016). HTTPS, limite de tentativas e PDFs persistentes estão feitos. **Só dados fictícios** até concluir a E4.2.
+- **P-020** (REDUZIDA em 2026-10-18) Na internet (D-024) já estão feitos: HTTPS obrigatório, limite de tentativas, PDFs persistentes e backup manual baixável. Faltam: remover a senha e os usuários de teste, separar teste e produção, HSTS de 1 ano, restauração de teste do .zip baixado.
 - **P-019** Os scripts `.bat` e o agendamento (`agendar_backup.bat`) nunca rodaram no Windows. O backup contém o `.env` e os hashes de senha: guardar em lugar seguro (D-022).
 - **P-007** Como o PDF é obrigatório, falta confirmar que ele não pode ser excluído sozinho (só substituído ou junto com o contrato).
 - **P-008** Ata e saldo não modelados; regra do saldo em aberto de propósito (E8).
-- **P-013** O código só existe no .zip entregue: o ambiente da sessão é temporário e não há GitHub. O responsável deve guardar o .zip; para continuar em outra conversa, anexá-lo de novo.
+- **P-013** (RESOLVIDA em 2026-10-18) O código oficial está no GitHub `felipesildiniz/gestordecontratos` (D-024); o .zip deixou de ser a única cópia.
 - **P-014** (REDUZIDA) A E4 foi executada no Railway com 22/22 testes OK, mas ainda não no servidor Windows com Python 3.12. Mitigação: `executar_testes.bat` no servidor.
 - **P-015** (REDUZIDA) HTTPS obrigatório e limite de tentativas implementados (D-026). Resta o bloqueio ser por usuário, não por IP, o que permite negar acesso a uma conta de propósito.
 - **P-016** Ao criar um novo Admin pela área administrativa, é preciso marcar "staff" manualmente (D-020).
@@ -54,10 +54,10 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 
 ## Checkpoint
 - ETAPA: E4.2 — Preparar para a internet
-- STATUS: EM ANDAMENTO (itens 1 a 3 de 8)
-- ÚLTIMO PONTO CONCLUÍDO: HTTPS obrigatório e cabeçalhos; `django-axes` (5 erros = bloqueio de 30 min por usuário); volume `/data` no Railway com `verificar_armazenamento` (marca sobreviveu à reimplantação); 34/34 testes OK no Railway; D-025 e D-026 registradas.
-- PONTO EXATO ONDE PAROU: item 4 (backup em nuvem) ainda não começou.
-- ARQUIVOS ALTERADOS: config/settings.py, accounts/tests.py, accounts/management/commands/verificar_armazenamento.py, templates/bloqueado.html, requirements.txt, .env.example, DECISIONS, ROADMAP, PROJECT_STATE, CHANGELOG. No Railway: volume `gestor-volume` em `/data`, variável `ARQUIVOS_PASTA`, comando de início com `verificar_armazenamento`.
-- O QUE FALTA: itens 4 a 8 da E4.2 (ver ROADMAP); enviar a E4.1 (backup) ao GitHub e adaptá-la à nuvem; `INSTALACAO_NUVEM.md`.
-- ERROS: nenhum aberto. Corrigido no caminho: 5 testes antigos falhavam porque o `client.login()` não passa `request` ao django-axes; trocados por `force_login`.
-- PRÓXIMA AÇÃO: item 4, backup em nuvem, conforme a D-027: no Hobby o backup do Railway é só manual e a cópia vai para o computador do responsável. O banco não tem acesso público, então o plano é uma tela "Backup" só para Admin que gera e baixa um .zip (banco + PDFs, sem `.env`). Aguardando a confirmação do responsável; depois a sessão implementa e testa no Railway. Em nova conversa, o código oficial está no GitHub `felipesildiniz/Gestordecontratos` (a E4.1 ainda só no .zip e no git local).
+- STATUS: EM ANDAMENTO (itens 1 a 4 de 8)
+- ÚLTIMO PONTO CONCLUÍDO: item 4, backup manual baixável (D-027): `Dockerfile` com `postgresql-client-18`; tela "Backup" só para Admin que gera o `.zip` (banco + PDFs + manifesto SHA-256, sem `.env` nem código) e o baixa; `nucleo` com projeto opcional. **66/66 testes OK no Railway** (deploy `28815753`, commit `9f6ecc0`), inclusive o que gera o `.zip` de verdade com `pg_dump` 18 e o que restaura (E4.1) com `pg_restore` 18. Volume `/data` continua persistente após a troca de build. `INSTALACAO_NUVEM.md` criado (item 8, primeira versão).
+- PONTO EXATO ONDE PAROU: o botão da tela de backup ainda não foi usado por uma pessoa no navegador; não houve restauração de um `.zip` baixado de verdade.
+- ARQUIVOS ALTERADOS: Dockerfile, .dockerignore, manutencao/nucleo.py, manutencao/web.py, manutencao/urls.py, manutencao/test_nucleo.py (+4 testes), manutencao/test_web.py (+7), config/urls.py, templates/backup.html, templates/home.html, INSTALACAO_NUVEM.md, DECISIONS, ROADMAP, PROJECT_STATE, CHANGELOG.
+- O QUE FALTA: item 5 (novo Admin pela área administrativa com acesso `staff`, P-016); 6 (remover `SENHA_TESTE` e usuários de teste); 7 (separar teste e produção); 8 (completar o guia); HSTS de 1 ano; restauração de teste do `.zip` baixado.
+- ERROS: nenhum aberto. No caminho: um teste meu esperava 4 arquivos no .zip em vez de 3 (corrigido); enquanto falhou, o serviço reiniciou em laço (o comando de início roda os testes antes de subir).
+- PRÓXIMA AÇÃO: o responsável abre `https://gestor-production-5955.up.railway.app`, entra como `admin_teste`, vai em "Backup dos dados", baixa o `.zip` e me conta se funcionou; depois fazemos a restauração de teste e os itens 5 a 8.

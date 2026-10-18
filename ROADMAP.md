@@ -9,7 +9,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E3 | Modelo de dados | Definir entidades, campos e relacionamentos (DATABASE.md) | CONCLUÍDA |
 | E4 | Esqueleto do projeto | Projeto Django + PostgreSQL, git local, login e perfis Admin/Consulta, testes automatizados | CONCLUÍDA (22/22 testes OK no Railway; falta confirmar no Windows) |
 | E4.1 | Backup local | Script de backup do banco, dos PDFs e da pasta do projeto, com restauração testada; obrigatório antes de dados reais (D-012, D-022) | PRECISA REVISÃO (código e restauração testados com PostgreSQL 16 no Linux; falta validar os .bat e o agendamento no Windows) |
-| E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | EM ANDAMENTO (itens 1 a 3 feitos e testados no Railway; faltam os itens 4 a 8) |
+| E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | EM ANDAMENTO (itens 1 a 4 feitos e testados no Railway; faltam os itens 5 a 8) |
 | E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
 | E6 | Vigências e prorrogações | Prazos, prorrogações e alertas 90/30/15 dias | NÃO INICIADA |
 | E7 | Termos aditivos | Aditivos vinculados a contratos | NÃO INICIADA |
@@ -53,5 +53,6 @@ A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e 
 - **Testes previstos:** testes automatizados do limite de login e dos cabeçalhos; teste de reimplantação mantendo um arquivo gravado; backup e restauração reais no Railway.
 - **Pendências:** decisões do responsável listadas na D-024 (hospedagem definitiva, domínio, responsável pelas contas, custo).
 - **Feito (2026-10-17):** itens 1 (HTTPS, D-026), 2 (limite de tentativas, D-026) e 3 (volume `/data`, comando `verificar_armazenamento`, persistência comprovada entre deploys). 34 testes OK no Railway.
-- **Falta:** item 4 backup em nuvem (adaptar a E4.1 ao Railway: `pg_dump` + cópia dos PDFs para fora do volume), 5 (novos Admin com acesso à área administrativa, P-016), 6 (remover `SENHA_TESTE` e usuários de teste da produção), 7 (separar teste e produção), 8 (`INSTALACAO_NUVEM.md`).
-- **Próxima ação:** item 4 (backup em nuvem), porque sem ele não pode haver dados reais. Decidido na D-027: no Hobby o backup do Railway é só manual e a cópia deve ir para o computador do responsável. Plano: tela "Backup" só para Admin que gera e baixa um .zip (banco + PDFs, sem `.env`), com `pg_dump` 18 na imagem, testes no Railway e uma restauração de teste. Aguarda a confirmação do mecanismo.
+- **Feito também (2026-10-18):** item 4, backup manual baixável (D-027): `Dockerfile` com `pg_dump` 18, tela "Backup" só para Admin, `.zip` sem `.env`; 66 testes OK no Railway.
+- **Falta:** 5 (novos Admin com acesso à área administrativa, P-016), 6 (remover `SENHA_TESTE` e usuários de teste da produção), 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano; restauração de teste do `.zip` baixado.
+- **Próxima ação:** o responsável testa o botão de backup no navegador e confirma; depois restauração de teste e itens 5 a 8.
