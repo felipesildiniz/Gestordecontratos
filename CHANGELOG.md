@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2: restauração de teste do backup real no Railway
+- **Novo:** `manutencao/management/commands/conferir_restauracao.py` (+3 testes) e `manutencao` registrado em `INSTALLED_APPS`.
+- **Resultado:** o `.zip` baixado pelo responsável restaurou num banco temporário do Railway (pg 18); contagens iguais às do banco em uso; banco temporário removido (`RESTAURACAO_OK`). 71/71 testes.
+- **Limpeza:** comando de inicialização restaurado; branch temporária apagada.
+
 ## 2026-10-18 — E4.2: corrige laço de redirecionamentos e confirma o backup em uso real
 - **Erro:** `ERR_TOO_MANY_REDIRECTS` no site do Railway. Causa: o waitress descartava o cabeçalho `X-Forwarded-Proto`, então o Django via HTTP e redirecionava sempre. Correção em `serve.py` (`opcoes_de_proxy`), commit `e2ea16d`, publicado no deploy `91a3a4fa` (68/68 testes).
 - **Confirmado pelo responsável:** login funciona e o download do backup pela tela "Backup dos dados" funcionou.
