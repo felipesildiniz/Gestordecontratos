@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2 item 7: produção renomeada, teste definido como environment
+- **Confirmado:** projeto de produção agora se chama `gestor-contratos`. O projeto antigo `c0d68ba3…` ainda existe e responde (P-021 aberta).
+- **Decidido pelo responsável:** ambiente de teste = segundo environment `teste` no mesmo projeto. O Claude não consegue criar environment; passos entregues ao responsável. Branch `teste` criada no GitHub.
+- **Código:** nenhum.
+
 ## 2026-10-18 — E4.2 item 7 iniciado: produção e teste separados (D-028)
 - **Decidido:** o projeto atual do Railway é a produção; deve ser renomeado para `gestor-contratos`.
 - **Limite:** o Claude não consegue renomear, criar ambiente nem apagar projeto no Railway; passos entregues ao responsável.
