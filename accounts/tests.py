@@ -298,3 +298,27 @@ class LeituraDoEnvTests(SimpleTestCase):
 
     def test_arquivo_inexistente_e_ignorado(self):
         carregar_env("/caminho/que/nao/existe/.env")
+
+
+class ProxyDoServidorTests(TestCase):
+    """O waitress precisa confiar no X-Forwarded-Proto do Railway (senão: laço de redirecionamentos)."""
+
+    def test_com_https_o_servidor_confia_no_proxy(self):
+        import os
+        from unittest import mock
+
+        import serve
+
+        with mock.patch.dict(os.environ, {"DJANGO_USAR_HTTPS": "True"}):
+            opcoes = serve.opcoes_de_proxy()
+        self.assertEqual(opcoes["trusted_proxy"], "*")
+        self.assertIn("x-forwarded-proto", opcoes["trusted_proxy_headers"])
+
+    def test_sem_https_nao_confia_em_proxy(self):
+        import os
+        from unittest import mock
+
+        import serve
+
+        with mock.patch.dict(os.environ, {"DJANGO_USAR_HTTPS": "False"}):
+            self.assertEqual(serve.opcoes_de_proxy(), {})
