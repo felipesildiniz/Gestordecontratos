@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2: corrige laço de redirecionamentos e confirma o backup em uso real
+- **Erro:** `ERR_TOO_MANY_REDIRECTS` no site do Railway. Causa: o waitress descartava o cabeçalho `X-Forwarded-Proto`, então o Django via HTTP e redirecionava sempre. Correção em `serve.py` (`opcoes_de_proxy`), commit `e2ea16d`, publicado no deploy `91a3a4fa` (68/68 testes).
+- **Confirmado pelo responsável:** login funciona e o download do backup pela tela "Backup dos dados" funcionou.
+- **Pendente:** restauração de teste com o `.zip` baixado; itens 5 a 8.
+
 ## 2026-10-17 — D-027 decidida: backup manual no Hobby e cópia no computador
 - **Informado pelo responsável:** no plano Hobby o backup do Railway só funciona manualmente; uma cópia deve ficar no computador dele.
 - **Verificado no Railway:** o Postgres não tem proxy TCP nem URL pública; o computador não alcança o banco com os scripts da E4.1. Os PDFs ficam num volume visível só ao serviço `gestor`.
