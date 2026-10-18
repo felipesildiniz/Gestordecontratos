@@ -9,7 +9,6 @@ disponíveis, esses testes são pulados.
 import json
 import os
 import shutil
-import subprocess
 import tempfile
 import unittest
 import zipfile
@@ -168,6 +167,30 @@ class VerificacaoTests(ProjetoTemporario):
         (pasta / "manifest.json").unlink()
         self.assertIn("manifest.json", nucleo.verificar_backup(pasta)[0])
 
+    def test_backup_sem_projeto_e_valido(self):
+        pasta = self._backup_falso()
+        manifesto = json.loads((pasta / "manifest.json").read_text())
+        del manifesto["arquivos"]["projeto.zip"]
+        (pasta / "manifest.json").write_text(json.dumps(manifesto))
+        (pasta / "projeto.zip").unlink()
+        self.assertEqual(nucleo.verificar_backup(pasta), [])
+
+    def test_projeto_fora_do_manifesto_e_apontado(self):
+        pasta = self._backup_falso()
+        manifesto = json.loads((pasta / "manifest.json").read_text())
+        del manifesto["arquivos"]["projeto.zip"]
+        (pasta / "manifest.json").write_text(json.dumps(manifesto))
+        self.assertIn("projeto.zip existe na pasta mas não consta",
+                      " ".join(nucleo.verificar_backup(pasta)))
+
+    def test_banco_e_pdfs_continuam_obrigatorios(self):
+        pasta = self._backup_falso()
+        manifesto = json.loads((pasta / "manifest.json").read_text())
+        del manifesto["arquivos"]["arquivos.zip"]
+        (pasta / "manifest.json").write_text(json.dumps(manifesto))
+        self.assertIn("arquivos.zip não consta no manifesto",
+                      " ".join(nucleo.verificar_backup(pasta)))
+
 
 class FerramentasTests(unittest.TestCase):
     def test_programa_inexistente_da_mensagem_clara(self):
@@ -233,6 +256,25 @@ class ComPostgresTests(ProjetoTemporario):
         )
         # A restauração não tocou no banco original.
         self.assertEqual(_sql(self.origem, "SELECT count(*) FROM contrato"), "0")
+
+    def test_backup_sem_projeto_nao_leva_o_env_e_restaura(self):
+        r = self._fazer(incluir_projeto=False)
+        pasta = Path(r["pasta"])
+        self.assertFalse((pasta / "projeto.zip").exists())
+        self.assertNotIn("projeto.zip", r["manifesto"]["arquivos"])
+        self.assertEqual(r["manifesto"]["quantidade"]["arquivos_do_projeto"], 0)
+        self.assertEqual(nucleo.verificar_backup(pasta), [])
+        res = nucleo.restaurar_backup(
+            pasta, _cfg(), self.destino,
+            pasta_arquivos_destino=self.tmp / "pdfs-restaurados",
+            pasta_projeto_destino=self.tmp / "projeto-restaurado",
+            pg_bin=texto("PG_BIN") or None,
+        )
+        self.assertEqual(res["projeto"], 0)
+        self.assertEqual(res["pdfs"], 2)
+        self.assertFalse((self.tmp / "projeto-restaurado" / ".env").exists())
+        self.assertEqual(
+            _sql(self.destino, "SELECT count(*) FROM contrato"), "2")
 
     def test_restauracao_nao_sobrescreve_banco_existente_sem_pedir(self):
         pasta = Path(self._fazer()["pasta"])

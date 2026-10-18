@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block titulo %}Backup — Gestor de Contratos{% endblock %}
+{% block corpo %}
+<header class="topo">
+  <strong>Gestor de Contratos</strong>
+  <div class="topo-direita">
+    <a href="{% url 'home' %}">Início</a>
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="link">Sair</button>
+    </form>
+  </div>
+</header>
+<main class="conteudo">
+  <h1>Backup</h1>
+  {% if erro %}
+    <p class="erro" role="alert">{{ erro }}</p>
+  {% endif %}
+  <p>Gera uma cópia completa dos dados do sistema (banco de dados e PDFs dos contratos) e baixa para este computador.</p>
+  <ul>
+    <li>Guarde o arquivo em um lugar seguro, de preferência em mais de um lugar (por exemplo, no computador e em um disco externo).</li>
+    <li>O arquivo contém dados do sistema, inclusive os contratos e as senhas dos usuários (em forma protegida). Não o envie por e-mail nem o deixe em locais públicos.</li>
+    <li>Faça o backup com frequência e sempre antes de mudanças importantes. Ele leva alguns segundos ou minutos, conforme o volume de PDFs.</li>
+  </ul>
+  <form method="post">
+    {% csrf_token %}
+    <button type="submit" class="botao" style="max-width: 22rem;">Gerar e baixar backup</button>
+  </form>
+</main>
+{% endblock %}

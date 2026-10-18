@@ -7,7 +7,8 @@ isoladamente e para funcionar mesmo que o sistema esteja com problema.
 Um backup é uma pasta com nome AAAA-MM-DD_HHMMSS contendo:
   banco.dump      cópia do banco (pg_dump, formato custom)
   arquivos.zip    os PDFs enviados ao sistema
-  projeto.zip     o código do sistema e o arquivo .env (guarda as senhas!)
+  projeto.zip     o código do sistema e o arquivo .env (guarda as senhas!);
+                  opcional: o backup feito pela tela do sistema na nuvem não o inclui
   manifest.json   tamanhos e somas SHA-256, usados para conferir o backup
 """
 import glob
@@ -25,6 +26,8 @@ FORMATO_PASTA = "%Y-%m-%d_%H%M%S"
 PADRAO_PASTA = re.compile(r"^\d{4}-\d{2}-\d{2}_\d{6}$")
 PADRAO_NOME_BANCO = re.compile(r"^[A-Za-z_][A-Za-z0-9_]{0,62}$")
 ARQUIVOS_DO_BACKUP = ("banco.dump", "arquivos.zip", "projeto.zip")
+# Sempre presentes; o projeto.zip só é conferido se o manifesto o declarar.
+ARQUIVOS_OBRIGATORIOS = ("banco.dump", "arquivos.zip")
 # Pastas que não entram no projeto.zip (são recriáveis ou são os próprios backups).
 PASTAS_IGNORADAS = {
     ".venv", "venv", "__pycache__", "staticfiles", "backups", "restauracao",
@@ -179,9 +182,14 @@ def verificar_backup(pasta):
         dados = json.loads(manifesto.read_text(encoding="utf-8"))
     except ValueError as erro:
         return [f"manifest.json ilegível: {erro}"]
+    declarados = dados.get("arquivos", {})
     for nome in ARQUIVOS_DO_BACKUP:
-        info = dados.get("arquivos", {}).get(nome)
+        info = declarados.get(nome)
         caminho = pasta / nome
+        if info is None and nome not in ARQUIVOS_OBRIGATORIOS:
+            if caminho.is_file():
+                problemas.append(f"{nome} existe na pasta mas não consta no manifesto.")
+            continue
         if info is None:
             problemas.append(f"{nome} não consta no manifesto.")
         elif not caminho.is_file():
@@ -194,11 +202,14 @@ def verificar_backup(pasta):
 
 
 def fazer_backup(cfg, pasta_projeto, pasta_arquivos, pasta_backup,
-                 pasta_copia=None, manter=30, pg_bin=None, agora=None):
+                 pasta_copia=None, manter=30, pg_bin=None, agora=None,
+                 incluir_projeto=True):
     """Faz um backup completo. Devolve um dicionário com o resultado.
 
     cfg: {"nome", "usuario", "senha", "host", "porta"} do banco a copiar.
     pasta_copia: segundo destino (disco externo ou pasta de rede), opcional.
+    incluir_projeto: False para não gravar o projeto.zip (código e .env); é o
+    caso do backup baixado pela tela do sistema na nuvem (D-027).
     Se a cópia secundária falhar, o backup local continua valendo e o problema
     vem em resultado["avisos"].
     """
@@ -231,10 +242,12 @@ def fazer_backup(cfg, pasta_projeto, pasta_arquivos, pasta_backup,
         total_pdfs = _compactar_pasta(pasta_arquivos, parcial / "arquivos.zip")
 
         # 3) Código do sistema (inclui .env), sem PDFs nem backups
-        total_projeto = _compactar_pasta(
-            pasta_projeto, parcial / "projeto.zip",
-            ignorar_pastas=[pasta_arquivos, pasta_backup, pasta_copia],
-        )
+        total_projeto = 0
+        if incluir_projeto:
+            total_projeto = _compactar_pasta(
+                pasta_projeto, parcial / "projeto.zip",
+                ignorar_pastas=[pasta_arquivos, pasta_backup, pasta_copia],
+            )
 
         # 4) Manifesto
         versao = _executar([pg_dump, "--version"], cfg, "Versão do pg_dump").strip()
@@ -247,6 +260,7 @@ def fazer_backup(cfg, pasta_projeto, pasta_arquivos, pasta_backup,
             "arquivos": {
                 n: {"bytes": (parcial / n).stat().st_size, "sha256": soma_sha256(parcial / n)}
                 for n in ARQUIVOS_DO_BACKUP
+                if (parcial / n).is_file()
             },
         }
         (parcial / "manifest.json").write_text(
@@ -347,6 +361,6 @@ def restaurar_backup(pasta, cfg, banco_destino, pasta_arquivos_destino=None,
     resultado = {"banco": banco_destino, "pdfs": 0, "projeto": 0}
     if pasta_arquivos_destino:
         resultado["pdfs"] = _extrair_zip(pasta / "arquivos.zip", pasta_arquivos_destino)
-    if pasta_projeto_destino:
+    if pasta_projeto_destino and (pasta / "projeto.zip").is_file():
         resultado["projeto"] = _extrair_zip(pasta / "projeto.zip", pasta_projeto_destino)
     return resultado
