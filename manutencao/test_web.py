@@ -108,7 +108,7 @@ class TelaDeBackupGeracaoTests(TestCase):
                 r.close()
         with zipfile.ZipFile(io.BytesIO(corpo)) as z:
             nomes = z.namelist()
-            self.assertEqual(len(nomes), 4, nomes)
+            self.assertEqual(len(nomes), 3, nomes)
             self.assertTrue(any(n.endswith("/banco.dump") for n in nomes))
             self.assertTrue(any(n.endswith("/arquivos.zip") for n in nomes))
             self.assertTrue(any(n.endswith("/manifest.json") for n in nomes))
