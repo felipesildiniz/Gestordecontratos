@@ -55,5 +55,5 @@ A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e 
 - **Feito (2026-10-17):** itens 1 (HTTPS, D-026), 2 (limite de tentativas, D-026) e 3 (volume `/data`, comando `verificar_armazenamento`, persistência comprovada entre deploys). 34 testes OK no Railway.
 - **Feito também (2026-10-18):** item 4, backup manual baixável (D-027): `Dockerfile` com `pg_dump` 18, tela "Backup" só para Admin, `.zip` sem `.env`; 66 testes OK no Railway.
 - **Feito (2026-10-18):** item 4 (backup manual baixável, confirmado em uso real e restauração real provada no Railway) e item 5 (staff automático para Admin, P-016; 83 testes OK no Railway), e item 6 (Admin real `CENERY`; usuários de teste e `SENHA_TESTE` removidos).
-- **Falta:** 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano; restauração de teste do `.zip` baixado.
+- **Falta:** 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano.
 - **Próxima ação:** o responsável testa o botão de backup no navegador e confirma; depois restauração de teste e itens 5 a 8.
