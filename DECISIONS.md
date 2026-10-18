@@ -171,3 +171,10 @@ Registro de decisões técnicas. Estados: ABERTA · PROPOSTA · DECIDIDA · SUBS
 - **Pendente do responsável:** testar o botão no navegador e escolher o segundo lugar da cópia (disco externo, outro computador).
 - **Implementação (2026-10-18):** `Dockerfile` com `postgresql-client-18`; `manutencao/web.py` (só Admin, POST gera, uma geração por vez, temporário apagado); `nucleo.fazer_backup(incluir_projeto=False)`; o `.zip` tem `banco.dump`, `arquivos.zip` e `manifest.json`. Guia em `INSTALACAO_NUVEM.md`.
 - **Código da E4.1 (D-022):** continua válido para servidor local; no Railway será reaproveitado como biblioteca (`manutencao/nucleo.py`).
+
+### D-028 — Produção e teste separados no Railway (E4.2 item 7)
+- **Data:** 2026-10-18. **Status:** DECIDIDA (separação); PROPOSTA (execução do ambiente de teste).
+- **Decisão do responsável:** o projeto atual do Railway (`e0422d22…`, domínio `gestor-production-5955`) é a **PRODUÇÃO** e deve ser renomeado de `gestor-contratos-teste` para `gestor-contratos`. Teste e produção ficam separados: dados reais só na produção; o teste usa só dados fictícios.
+- **Limite das ferramentas:** o Claude não consegue renomear projeto, criar ambiente nem apagar projeto no Railway (nem pela ferramenta de agente). Esses passos são do responsável, pelo painel (ver PROJECT_STATE).
+- **Forma recomendada do ambiente de teste:** um segundo *environment* (`teste`) no mesmo projeto, duplicando `production`, com banco e volume próprios, domínio próprio, `DJANGO_SECRET_KEY` diferente e branch `teste`. Custo extra no plano Hobby (outro Postgres e volume); avaliar antes de ligar.
+- **Segurança:** o projeto antigo `c0d68ba3…` (domínio `gestor-production-d45a`) está no ar com versão antiga (E4) e deve ser apagado pelo responsável.

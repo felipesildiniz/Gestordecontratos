@@ -2,6 +2,12 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2 item 7 iniciado: produção e teste separados (D-028)
+- **Decidido:** o projeto atual do Railway é a produção; deve ser renomeado para `gestor-contratos`.
+- **Limite:** o Claude não consegue renomear, criar ambiente nem apagar projeto no Railway; passos entregues ao responsável.
+- **Achado de segurança (P-021):** o projeto antigo `c0d68ba3…` (domínio `-d45a`) continua no ar com a versão antiga.
+- **Código:** nenhum.
+
 ## 2026-10-18 — E4.2 item 6: Admin real no lugar dos usuários de teste
 - **Feito pelo responsável:** criou `CENERY` (grupo Admin, senha só dele) em `/admin/`, entrou com ele, apagou `admin_teste` e `consulta_teste` e removeu `SENHA_TESTE` no Railway. Sem erros relatados.
 - **Feito pelo Claude:** criação automática dos usuários de teste retirada do comando de inicialização (redeploy `67418e3f`); confirmado que `SENHA_TESTE` não existe mais e que o deploy seguinte (`a397d405`) está rodando. Nenhum código alterado.
