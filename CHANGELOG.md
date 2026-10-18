@@ -2,6 +2,12 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-18 — E4.2 item 6: Admin real no lugar dos usuários de teste
+- **Feito pelo responsável:** criou `CENERY` (grupo Admin, senha só dele) em `/admin/`, entrou com ele, apagou `admin_teste` e `consulta_teste` e removeu `SENHA_TESTE` no Railway. Sem erros relatados.
+- **Feito pelo Claude:** criação automática dos usuários de teste retirada do comando de inicialização (redeploy `67418e3f`); confirmado que `SENHA_TESTE` não existe mais e que o deploy seguinte (`a397d405`) está rodando. Nenhum código alterado.
+- **Não verificável pelo Claude:** a exclusão dos dois usuários (sem acesso ao banco); fica pela confirmação do responsável.
+- **Pendente:** itens 7 e 8.
+
 ## 2026-10-18 — E4.2 item 5: novo Admin recebe acesso à área administrativa (P-016)
 - **Implementado:** `sincronizar_staff` em `accounts/perfis.py`, ligado ao sinal `m2m_changed` de `User.groups` em `accounts/apps.py`. Entrar no grupo Admin concede `is_staff`; sair retira (exceto superusuário); Consulta nunca concede; `is_staff` dado à mão a quem não é Admin não é mexido.
 - **Testes:** +12 em `accounts/tests.py` (add, set, lado do grupo, remove, clear nos dois lados, superusuário, outro grupo, acesso real a `/admin/`). 83/83 no Railway (deploy `9f5beb98`, commit `7a3c542`).
