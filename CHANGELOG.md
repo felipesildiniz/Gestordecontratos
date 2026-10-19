@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.3a CONCLUÍDA no `teste`
+- **Resultado:** 95/95 testes no deploy `5aa0846e` (commit `01a303d`, branch `teste`); migração `accounts.0001_initial` aplicada; `teste` no ar. Produção intacta.
+
 ## 2026-10-19 — E4.3a: 1º deploy no `teste` com 4 testes falhando; correção enviada
 - **Resultado:** 95 testes, 4 falhas, todas pelo ajudante de teste `entrar` (backend antigo). O `teste` ficou fora do ar (testes rodam antes do servidor). Produção intacta.
 - **Correção:** commit `01a303d` na branch `teste` (só `accounts/tests.py`), preparada no Railway (patch `b6a865df`) para o responsável aplicar.
