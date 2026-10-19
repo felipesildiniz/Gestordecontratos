@@ -10,6 +10,8 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E4 | Esqueleto do projeto | Projeto Django + PostgreSQL, git local, login e perfis Admin/Consulta, testes automatizados | CONCLUÍDA (22/22 testes OK no Railway; falta confirmar no Windows) |
 | E4.1 | Backup local | Script de backup do banco, dos PDFs e da pasta do projeto, com restauração testada; obrigatório antes de dados reais (D-012, D-022) | PRECISA REVISÃO (código e restauração testados com PostgreSQL 16 no Linux; falta validar os .bat e o agendamento no Windows) |
 | E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | EM ANDAMENTO (itens 1 a 4 feitos e testados no Railway; faltam os itens 5 a 8) |
+| E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso ao usuário e MFA para contas sensíveis; desbloqueio manual pelo Admin (D-030) | NÃO INICIADA |
+| E4.4 | Backup externo criptografado | Segunda cópia em nuvem criptografada fora do Railway, chave com o responsável; opcional terceira cópia em HD externo (D-029) | NÃO INICIADA |
 | E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
 | E6 | Vigências e prorrogações | Prazos, prorrogações e alertas 90/30/15 dias | NÃO INICIADA |
 | E7 | Termos aditivos | Aditivos vinculados a contratos | NÃO INICIADA |
@@ -19,7 +21,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E11 | Auditoria | Log de alterações | NÃO INICIADA |
 | E12 | Relatórios | Relatórios e exportação | NÃO INICIADA |
 
-A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e testado no Railway (D-024); a E4.2 deve vir antes de dados reais e, de preferência, antes da E9 (upload de PDFs).
+A E4.3 e a E4.4 devem estar prontas antes de dados reais. A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e testado no Railway (D-024); a E4.2 deve vir antes de dados reais e, de preferência, antes da E9 (upload de PDFs).
 
 ## E3 — Modelo de dados (CONCLUÍDA em 2026-10-03)
 - Modelo lógico de 12 tabelas em DATABASE.md, revisado e ajustado com as respostas do responsável. Nenhum código.
@@ -55,5 +57,6 @@ A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e 
 - **Feito (2026-10-17):** itens 1 (HTTPS, D-026), 2 (limite de tentativas, D-026) e 3 (volume `/data`, comando `verificar_armazenamento`, persistência comprovada entre deploys). 34 testes OK no Railway.
 - **Feito também (2026-10-18):** item 4, backup manual baixável (D-027): `Dockerfile` com `pg_dump` 18, tela "Backup" só para Admin, `.zip` sem `.env`; 66 testes OK no Railway.
 - **Feito (2026-10-18):** item 4 (backup manual baixável, confirmado em uso real e restauração real provada no Railway) e item 5 (staff automático para Admin, P-016; 83 testes OK no Railway), e item 6 (Admin real `CENERY`; usuários de teste e `SENHA_TESTE` removidos).
-- **Falta:** 7 (separar teste e produção), 8 (completar `INSTALACAO_NUVEM.md`); HSTS de 1 ano.
+- **Feito (2026-10-19):** item 7 (produção `gestor-contratos` e ambiente `teste` separados, com banco e volume próprios; D-028).
+- **Falta:** 8 (completar `INSTALACAO_NUVEM.md`, criação do primeiro Admin em ambiente novo e HSTS de 1 ano). Segurança de acesso e backup externo viraram as etapas E4.3 e E4.4 (D-029, D-030), antes de dados reais.
 - **Próxima ação:** o responsável testa o botão de backup no navegador e confirma; depois restauração de teste e itens 5 a 8.

@@ -2,6 +2,12 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.2 item 7 concluído; políticas de backup e login decididas (D-029, D-030)
+- **Conferido:** `teste` no ar na branch `teste` (deploy `b36f2e9e`, 83/83 testes, armazenamento persistente, `admin_ficticio`); produção intacta (deploy `a397d405`).
+- **Decidido pelo responsável:** D-029 (segunda cópia em nuvem criptografada off-site, chave sob custódia do responsável, HD externo opcional) e D-030 (bloqueio progressivo 15 min, 1 h, 24 h, aviso ao usuário e MFA para contas sensíveis; sem bloqueio permanente por padrão; desbloqueio manual pelo Admin).
+- **ROADMAP:** novas etapas E4.3 (acesso seguro) e E4.4 (backup externo criptografado), NÃO INICIADAS.
+- **Código:** nenhum.
+
 ## 2026-10-19 — E4.2 item 7: ambiente `teste` configurado (aplicação pendente)
 - **Conferido:** `teste` tem Postgres e volume próprios; produção não foi alterada; projeto antigo apagado e fora do ar (P-021 resolvida).
 - **Configurado só no `teste`:** `DJANGO_SECRET_KEY` própria, `SENHA_ADMIN_TESTE`, comando de inicialização com `admin_ficticio`.
