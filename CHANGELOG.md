@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.3a escrita na branch `teste` (CHECKPOINT, ainda sem teste)
+- **Implementado (commit `416a60f`, só na branch `teste`):** bloqueio de login progressivo (5 falhas, 15 min, 1 h, 24 h, sem bloqueio permanente), aviso na próxima entrada, ação de desbloquear na área administrativa e comando `desbloquear_usuario`; `django-axes` removido. 17 testes novos.
+- **Não verificado:** o Claude não roda o Django localmente; o deploy no `teste` está preparado (patch `93090ce6`) e aguarda aplicação pelo responsável (o `accept-deploy` foi recusado).
+- **Produção:** intacta (branch `main`, com axes).
+
 ## 2026-10-19 — E4.2 CONCLUÍDA
 - **Conferido:** produção reimplantada com HSTS de 1 ano (deploy `763e90bd`): 83/83 testes, armazenamento persistente, login abre. O cabeçalho HSTS em si não foi lido (limite do ambiente do Claude); a configuração está aplicada e testada.
 - **Resultado da etapa:** HTTPS, limite de login, PDFs persistentes, backup manual baixável com restauração provada, staff automático do Admin, Admin real, produção e teste separados, guia da nuvem.

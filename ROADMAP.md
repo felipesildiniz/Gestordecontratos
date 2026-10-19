@@ -10,7 +10,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E4 | Esqueleto do projeto | Projeto Django + PostgreSQL, git local, login e perfis Admin/Consulta, testes automatizados | CONCLUÍDA (22/22 testes OK no Railway; falta confirmar no Windows) |
 | E4.1 | Backup local | Script de backup do banco, dos PDFs e da pasta do projeto, com restauração testada; obrigatório antes de dados reais (D-012, D-022) | PRECISA REVISÃO (código e restauração testados com PostgreSQL 16 no Linux; falta validar os .bat e o agendamento no Windows) |
 | E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | CONCLUÍDA (2026-10-19) |
-| E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso na próxima entrada e MFA por aplicativo autenticador com códigos de recuperação para todo Admin; desbloqueio manual pelo Admin (D-030) | NÃO INICIADA |
+| E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso na próxima entrada e MFA por aplicativo autenticador com códigos de recuperação para todo Admin; desbloqueio manual pelo Admin (D-030) | EM ANDAMENTO (E4.3a escrita, aguardando teste no `teste`; E4.3b não iniciada) |
 | E4.4 | Backup externo criptografado | Backup semanal criptografado no Google Drive, chave privada só do responsável; opcional terceira cópia em HD externo (D-029) | NÃO INICIADA |
 | E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
 | E6 | Vigências e prorrogações | Prazos, prorrogações e alertas 90/30/15 dias | NÃO INICIADA |
