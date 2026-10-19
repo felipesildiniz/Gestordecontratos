@@ -2,6 +2,10 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.3a: 1º deploy no `teste` com 4 testes falhando; correção enviada
+- **Resultado:** 95 testes, 4 falhas, todas pelo ajudante de teste `entrar` (backend antigo). O `teste` ficou fora do ar (testes rodam antes do servidor). Produção intacta.
+- **Correção:** commit `01a303d` na branch `teste` (só `accounts/tests.py`), preparada no Railway (patch `b6a865df`) para o responsável aplicar.
+
 ## 2026-10-19 — E4.3a escrita na branch `teste` (CHECKPOINT, ainda sem teste)
 - **Implementado (commit `416a60f`, só na branch `teste`):** bloqueio de login progressivo (5 falhas, 15 min, 1 h, 24 h, sem bloqueio permanente), aviso na próxima entrada, ação de desbloquear na área administrativa e comando `desbloquear_usuario`; `django-axes` removido. 17 testes novos.
 - **Não verificado:** o Claude não roda o Django localmente; o deploy no `teste` está preparado (patch `93090ce6`) e aguarda aplicação pelo responsável (o `accept-deploy` foi recusado).
