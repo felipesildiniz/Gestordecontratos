@@ -2,6 +2,12 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.2 item 8: guia da nuvem completo e HSTS de 1 ano; escolhas de E4.3 e E4.4
+- **Guia:** `INSTALACAO_NUVEM.md` reescrito (produção e teste, fluxo de publicação, regra da troca de fonte por ambiente, primeiro Admin em ambiente novo, backup e restauração, lista de pré-requisitos).
+- **HSTS:** `DJANGO_HSTS_SEGUNDOS=31536000` aplicado só na produção.
+- **Decisões do responsável:** E4.3 (todo Admin, MFA por aplicativo autenticador com códigos de recuperação, aviso na próxima entrada) e E4.4 (semanal, Google Drive, chave privada só dele).
+- **Código:** nenhum.
+
 ## 2026-10-19 — E4.2 item 7 concluído; políticas de backup e login decididas (D-029, D-030)
 - **Conferido:** `teste` no ar na branch `teste` (deploy `b36f2e9e`, 83/83 testes, armazenamento persistente, `admin_ficticio`); produção intacta (deploy `a397d405`).
 - **Decidido pelo responsável:** D-029 (segunda cópia em nuvem criptografada off-site, chave sob custódia do responsável, HD externo opcional) e D-030 (bloqueio progressivo 15 min, 1 h, 24 h, aviso ao usuário e MFA para contas sensíveis; sem bloqueio permanente por padrão; desbloqueio manual pelo Admin).
