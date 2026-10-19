@@ -33,7 +33,7 @@ def entrar(cliente, login):
     """
     cliente.force_login(
         Usuario.objects.get(username=login),
-        backend="django.contrib.auth.backends.ModelBackend",
+        backend="accounts.backends.ModelBackendComBloqueio",
     )
 
 
