@@ -4,15 +4,21 @@ Rodam com:  python manage.py test
 Precisam do PostgreSQL configurado no .env. O usuário do banco precisa da
 permissão CREATEDB, porque o Django cria um banco temporário só para os testes.
 """
+from datetime import timedelta
+from unittest import mock
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import Client, SimpleTestCase, TestCase, override_settings
+from django.utils import timezone
 from django.urls import reverse
 
 from config.env import booleano, carregar_env, lista, texto
 
+from .bloqueio import DURACOES
+from .models import BloqueioLogin
 from .perfis import ADMIN, CONSULTA, perfil_do_usuario
 
 Usuario = get_user_model()
@@ -22,9 +28,8 @@ SENHA = "Senha-Forte-123!"
 def entrar(cliente, login):
     """Abre a sessão sem passar pela tela de login.
 
-    O django-axes exige um "request" em authenticate(), e o client.login() do
-    Django não o fornece; por isso os testes usam force_login. A senha e o
-    bloqueio são testados à parte, pela própria tela de login.
+    Os testes usam force_login para não depender da senha em cada teste. A
+    senha e o bloqueio são testados à parte, pela própria tela de login.
     """
     cliente.force_login(
         Usuario.objects.get(username=login),
@@ -52,7 +57,11 @@ class PerfisExistemTests(TestCase):
         consulta = Group.objects.get(name=CONSULTA)
         codigos = set(admin.permissions.values_list("codename", flat=True))
         self.assertEqual(
-            codigos, {"add_user", "change_user", "delete_user", "view_user"}
+            codigos,
+            {
+                "add_user", "change_user", "delete_user", "view_user",
+                "view_bloqueiologin", "change_bloqueiologin",
+            },
         )
         self.assertEqual(consulta.permissions.count(), 0)
 
@@ -251,53 +260,149 @@ class StaffAcompanhaPerfilAdminTests(TestCase):
         self.assertEqual(self.client.get("/admin/auth/user/").status_code, 200)
 
 
-class LimiteDeTentativasTests(TestCase):
-    """E4.2: depois de 5 senhas erradas o usuário fica bloqueado (django-axes)."""
+class BloqueioProgressivoTests(TestCase):
+    """E4.3 (D-030): 5 erros bloqueiam por 15 min, depois 1 h, depois 24 h."""
 
     def setUp(self):
         criar_usuario("ana", "admin")
         criar_usuario("beto", "consulta")
+        self.agora = timezone.now()
+        relogio = mock.patch("accounts.bloqueio._agora", side_effect=lambda: self.agora)
+        relogio.start()
+        self.addCleanup(relogio.stop)
 
-    def _errar(self, usuario, vezes):
+    def _errar(self, usuario, vezes, rota=None):
         for _ in range(vezes):
-            self.client.post(reverse("login"), {"username": usuario, "password": "errada"})
+            self.client.post(rota or reverse("login"), {"username": usuario, "password": "errada"})
+
+    def _entrar(self, usuario="ana", senha=SENHA):
+        return self.client.post(reverse("login"), {"username": usuario, "password": senha})
+
+    def _registro(self, usuario="ana"):
+        return BloqueioLogin.objects.get(usuario=usuario)
 
     def test_quatro_erros_nao_bloqueiam(self):
         self._errar("ana", 4)
-        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
-        self.assertRedirects(resposta, reverse("home"))
+        self.assertRedirects(self._entrar(), reverse("home"))
 
     def test_cinco_erros_bloqueiam_ate_com_a_senha_certa(self):
         self._errar("ana", 5)
-        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        resposta = self._entrar()
         self.assertEqual(resposta.status_code, 403)
         self.assertContains(resposta, "Acesso bloqueado", status_code=403)
         self.assertNotIn("_auth_user_id", self.client.session)
 
+    def test_primeiro_bloqueio_dura_15_minutos(self):
+        self._errar("ana", 5)
+        registro = self._registro()
+        self.assertEqual(registro.bloqueado_ate - self.agora, timedelta(minutes=15))
+        self.assertEqual(registro.nivel, 1)
+
+    def test_passado_o_prazo_a_senha_certa_entra(self):
+        self._errar("ana", 5)
+        self.agora += timedelta(minutes=14)
+        self.assertEqual(self._entrar().status_code, 403)
+        self.agora += timedelta(minutes=2)
+        self.assertRedirects(self._entrar(), reverse("home"))
+
+    def test_reincidencia_sobe_para_1h_depois_24h_e_fica_em_24h(self):
+        esperado = [DURACOES[0], DURACOES[1], DURACOES[2], DURACOES[2]]
+        for nivel, duracao in enumerate(esperado, start=1):
+            self._errar("ana", 5)
+            registro = self._registro()
+            self.assertEqual(registro.nivel, nivel)
+            self.assertEqual(registro.bloqueado_ate - self.agora, duracao)
+            self.agora = registro.bloqueado_ate + timedelta(minutes=1)
+
+    def test_nivel_volta_a_zero_depois_de_7_dias(self):
+        self._errar("ana", 5)
+        self.agora = self._registro().bloqueado_ate + timedelta(days=8)
+        self._errar("ana", 5)
+        registro = self._registro()
+        self.assertEqual(registro.nivel, 1)
+        self.assertEqual(registro.bloqueado_ate - self.agora, timedelta(minutes=15))
+
+    def test_tentativas_durante_o_bloqueio_nao_estendem_nem_escalam(self):
+        self._errar("ana", 5)
+        antes = self._registro()
+        self._errar("ana", 3)
+        depois = self._registro()
+        self.assertEqual(depois.nivel, 1)
+        self.assertEqual(depois.bloqueado_ate, antes.bloqueado_ate)
+
     def test_bloqueio_de_um_usuario_nao_afeta_outro(self):
         self._errar("ana", 5)
-        resposta = self.client.post(reverse("login"), {"username": "beto", "password": SENHA})
-        self.assertRedirects(resposta, reverse("home"))
+        self.assertRedirects(self._entrar("beto"), reverse("home"))
 
-    def test_login_correto_zera_a_contagem(self):
+    def test_login_correto_zera_as_senhas_erradas_seguidas(self):
         self._errar("ana", 4)
-        self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
+        self._entrar()
         self.client.post(reverse("logout"))
         self._errar("ana", 4)
-        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
-        self.assertRedirects(resposta, reverse("home"))
+        self.assertRedirects(self._entrar(), reverse("home"))
+
+    def test_nome_que_nao_existe_se_comporta_igual(self):
+        self._errar("fantasma", 5)
+        resposta = self.client.post(reverse("login"), {"username": "fantasma", "password": "x"})
+        self.assertContains(resposta, "Acesso bloqueado", status_code=403)
+
+    def test_maiusculas_e_espacos_contam_como_o_mesmo_usuario(self):
+        self._errar("ana", 3)
+        self._errar(" ANA ", 2)
+        self.assertEqual(self._entrar().status_code, 403)
 
     def test_area_administrativa_tambem_e_protegida(self):
-        for _ in range(5):
-            self.client.post("/admin/login/", {"username": "ana", "password": "errada"})
-        resposta = self.client.post("/admin/login/", {"username": "ana", "password": SENHA})
-        self.assertEqual(resposta.status_code, 403)
+        self._errar("ana", 5, rota="/admin/login/")
+        self.client.post("/admin/login/", {"username": "ana", "password": SENHA})
+        self.assertNotIn("_auth_user_id", self.client.session)
+        self.assertEqual(self._entrar().status_code, 403)
 
-    def test_desbloqueio_pelo_comando_do_axes(self):
+    def test_aviso_na_proxima_entrada_aparece_uma_vez_so(self):
         self._errar("ana", 5)
-        call_command("axes_reset")
-        resposta = self.client.post(reverse("login"), {"username": "ana", "password": SENHA})
-        self.assertRedirects(resposta, reverse("home"))
+        self.agora += timedelta(minutes=16)
+        resposta = self.client.post(
+            reverse("login"), {"username": "ana", "password": SENHA}, follow=True
+        )
+        self.assertContains(resposta, "foi bloqueada 1 vez")
+        self.client.post(reverse("logout"))
+        resposta = self.client.post(
+            reverse("login"), {"username": "ana", "password": SENHA}, follow=True
+        )
+        self.assertNotContains(resposta, "foi bloqueada")
+
+    def test_sem_bloqueio_nao_ha_aviso(self):
+        resposta = self.client.post(
+            reverse("login"), {"username": "ana", "password": SENHA}, follow=True
+        )
+        self.assertNotContains(resposta, "foi bloqueada")
+
+    def test_desbloqueio_pelo_comando(self):
+        self._errar("ana", 5)
+        call_command("desbloquear_usuario", usuario="ana")
+        self.assertRedirects(self._entrar(), reverse("home"))
+        self.assertEqual(self._registro().nivel, 0)
+
+    def test_comando_exige_usuario_ou_todos(self):
+        with self.assertRaises(CommandError):
+            call_command("desbloquear_usuario")
+
+    def test_desbloqueio_pela_area_administrativa(self):
+        criar_usuario("chefe", "admin")
+        self._errar("beto", 5)
+        entrar(self.client, "chefe")
+        registro = self._registro("beto")
+        resposta = self.client.post(
+            "/admin/accounts/bloqueiologin/",
+            {"action": "desbloquear", "index": "0", "_selected_action": [registro.pk]},
+        )
+        self.assertEqual(resposta.status_code, 302)
+        self.client.logout()
+        self.assertRedirects(self._entrar("beto"), reverse("home"))
+
+    def test_consulta_nao_ve_os_bloqueios(self):
+        entrar(self.client, "beto")
+        resposta = self.client.get("/admin/accounts/bloqueiologin/")
+        self.assertEqual(resposta.status_code, 302)
 
 
 class HttpsTests(TestCase):

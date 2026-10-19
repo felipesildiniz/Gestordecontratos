@@ -13,6 +13,9 @@
   </div>
 </header>
 <main class="conteudo">
+  {% for mensagem in messages %}
+    <p class="aviso" role="alert">{{ mensagem }}</p>
+  {% endfor %}
   <h1>Bem-vindo</h1>
   {% if perfil %}
     <p>O sistema está em construção. Os cadastros serão acrescentados nas próximas etapas.</p>

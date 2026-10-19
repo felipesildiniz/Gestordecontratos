@@ -1,6 +1,6 @@
 """Perfis de acesso do sistema (decisão D-010).
 
-- Admin: edita tudo, inclusive usuários.
+- Admin: edita tudo, inclusive usuários e o desbloqueio de logins.
 - Consulta: somente visualiza.
 
 Os perfis são grupos do Django. Um usuário sem perfil consegue entrar, mas não
@@ -40,8 +40,9 @@ def garantir_perfis(using="default"):
     from django.contrib.auth.management import create_permissions
     from django.contrib.auth.models import Group, Permission
 
-    # Em um banco novo, as permissões do app auth podem ainda não existir.
+    # Em um banco novo, as permissões dos apps auth e accounts podem ainda não existir.
     create_permissions(apps.get_app_config("auth"), verbosity=0, using=using)
+    create_permissions(apps.get_app_config("accounts"), verbosity=0, using=using)
 
     grupos = {
         nome: Group.objects.using(using).get_or_create(name=nome)[0]
@@ -51,7 +52,13 @@ def garantir_perfis(using="default"):
     permissoes_usuario = Permission.objects.using(using).filter(
         content_type__app_label="auth", content_type__model="user"
     )
-    grupos[ADMIN].permissions.set(permissoes_usuario)
+    # Também vê e desbloqueia os bloqueios de login (D-030).
+    permissoes_bloqueio = Permission.objects.using(using).filter(
+        content_type__app_label="accounts",
+        content_type__model="bloqueiologin",
+        codename__in=["view_bloqueiologin", "change_bloqueiologin"],
+    )
+    grupos[ADMIN].permissions.set(list(permissoes_usuario) + list(permissoes_bloqueio))
     # Consulta não tem permissões de edição. As de visualização dos cadastros
     # serão acrescentadas aqui nas próximas etapas.
     grupos[CONSULTA].permissions.clear()

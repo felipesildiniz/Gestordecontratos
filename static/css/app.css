@@ -93,3 +93,4 @@ input:focus-visible, button:focus-visible, a:focus-visible {
 }
 
 .conteudo { max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; }
+.aviso { background: #fff4e5; border: 1px solid #f0b429; border-radius: 6px; padding: 0.75rem 1rem; margin: 0 0 1rem; }
