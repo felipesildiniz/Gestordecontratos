@@ -2,6 +2,13 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.2 item 7: ambiente `teste` configurado (aplicação pendente)
+- **Conferido:** `teste` tem Postgres e volume próprios; produção não foi alterada; projeto antigo apagado e fora do ar (P-021 resolvida).
+- **Configurado só no `teste`:** `DJANGO_SECRET_KEY` própria, `SENHA_ADMIN_TESTE`, comando de inicialização com `admin_ficticio`.
+- **Pendente:** troca da branch do `teste` para `teste` preparada (staged) e não aplicada (recusada pelo responsável).
+- **Regra nova:** `connect-service-source` sempre com `staged` + `environmentId`.
+- **Código:** nenhum.
+
 ## 2026-10-18 — E4.2 item 7: produção renomeada, teste definido como environment
 - **Confirmado:** projeto de produção agora se chama `gestor-contratos`. O projeto antigo `c0d68ba3…` ainda existe e responde (P-021 aberta).
 - **Decidido pelo responsável:** ambiente de teste = segundo environment `teste` no mesmo projeto. O Claude não consegue criar environment; passos entregues ao responsável. Branch `teste` criada no GitHub.
