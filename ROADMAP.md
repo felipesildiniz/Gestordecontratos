@@ -9,7 +9,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E3 | Modelo de dados | Definir entidades, campos e relacionamentos (DATABASE.md) | CONCLUÍDA |
 | E4 | Esqueleto do projeto | Projeto Django + PostgreSQL, git local, login e perfis Admin/Consulta, testes automatizados | CONCLUÍDA (22/22 testes OK no Railway; falta confirmar no Windows) |
 | E4.1 | Backup local | Script de backup do banco, dos PDFs e da pasta do projeto, com restauração testada; obrigatório antes de dados reais (D-012, D-022) | PRECISA REVISÃO (código e restauração testados com PostgreSQL 16 no Linux; falta validar os .bat e o agendamento no Windows) |
-| E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | EM ANDAMENTO (itens 1 a 4 feitos e testados no Railway; faltam os itens 5 a 8) |
+| E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | CONCLUÍDA (2026-10-19) |
 | E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso na próxima entrada e MFA por aplicativo autenticador com códigos de recuperação para todo Admin; desbloqueio manual pelo Admin (D-030) | NÃO INICIADA |
 | E4.4 | Backup externo criptografado | Backup semanal criptografado no Google Drive, chave privada só do responsável; opcional terceira cópia em HD externo (D-029) | NÃO INICIADA |
 | E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
@@ -59,5 +59,5 @@ A E4.3 e a E4.4 devem estar prontas antes de dados reais. A ordem de E5 a E12 é
 - **Feito (2026-10-18):** item 4 (backup manual baixável, confirmado em uso real e restauração real provada no Railway) e item 5 (staff automático para Admin, P-016; 83 testes OK no Railway), e item 6 (Admin real `CENERY`; usuários de teste e `SENHA_TESTE` removidos).
 - **Feito (2026-10-19):** item 7 (produção `gestor-contratos` e ambiente `teste` separados, com banco e volume próprios; D-028).
 - **Feito (2026-10-19):** item 8 (`INSTALACAO_NUVEM.md` completo: ambientes, fluxo de publicação, primeiro Admin, políticas; HSTS da produção em 1 ano).
-- **Falta:** fechar a E4.2 depois de conferir a produção com o HSTS novo. Segurança de acesso e backup externo viraram as etapas E4.3 e E4.4 (D-029, D-030), antes de dados reais.
+- **E4.2 CONCLUÍDA em 2026-10-19** (produção com HSTS de 1 ano conferida: 83/83 testes). Segurança de acesso e backup externo viraram as etapas E4.3 e E4.4 (D-029, D-030), antes de dados reais.
 - **Próxima ação:** o responsável testa o botão de backup no navegador e confirma; depois restauração de teste e itens 5 a 8.

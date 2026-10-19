@@ -2,6 +2,11 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-19 — E4.2 CONCLUÍDA
+- **Conferido:** produção reimplantada com HSTS de 1 ano (deploy `763e90bd`): 83/83 testes, armazenamento persistente, login abre. O cabeçalho HSTS em si não foi lido (limite do ambiente do Claude); a configuração está aplicada e testada.
+- **Resultado da etapa:** HTTPS, limite de login, PDFs persistentes, backup manual baixável com restauração provada, staff automático do Admin, Admin real, produção e teste separados, guia da nuvem.
+- **Próximas:** E4.3 e E4.4, antes de dados reais.
+
 ## 2026-10-19 — E4.2 item 8: guia da nuvem completo e HSTS de 1 ano; escolhas de E4.3 e E4.4
 - **Guia:** `INSTALACAO_NUVEM.md` reescrito (produção e teste, fluxo de publicação, regra da troca de fonte por ambiente, primeiro Admin em ambiente novo, backup e restauração, lista de pré-requisitos).
 - **HSTS:** `DJANGO_HSTS_SEGUNDOS=31536000` aplicado só na produção.
