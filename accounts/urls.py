@@ -7,11 +7,10 @@ urlpatterns = [
     path("", views.home, name="home"),
     path(
         "entrar/",
-        auth_views.LoginView.as_view(
-            template_name="registration/login.html",
-            redirect_authenticated_user=True,
-        ),
+        views.EntrarView.as_view(),
         name="login",
     ),
+    path("mfa/configurar/", views.mfa_configurar, name="mfa_configurar"),
+    path("mfa/verificar/", views.mfa_verificar, name="mfa_verificar"),
     path("sair/", auth_views.LogoutView.as_view(), name="logout"),
 ]

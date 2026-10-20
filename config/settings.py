@@ -4,7 +4,6 @@ Os valores que mudam de um computador para outro (senhas, endereços) ficam no
 arquivo .env, que não deve ser compartilhado. Veja .env.example.
 """
 import sys
-from datetime import timedelta
 from pathlib import Path
 
 from .env import booleano, carregar_env, lista, texto
@@ -36,7 +35,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "axes",
     "accounts",
     "manutencao",
 ]
@@ -49,9 +47,8 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
+    "accounts.middleware.ExigirMFAParaAdmin",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    # Deve ser o último: bloqueia tentativas repetidas de senha (E4.2).
-    "axes.middleware.AxesMiddleware",
 ]
 
 ROOT_URLCONF = "config.urls"
@@ -140,22 +137,11 @@ SESSION_COOKIE_HTTPONLY = True
 SECURE_REFERRER_POLICY = "same-origin"
 X_FRAME_OPTIONS = "DENY"
 
-# Limite de tentativas de senha (E4.2, django-axes). Depois de 5 erros seguidos
-# para o mesmo usuário, o login desse usuário fica bloqueado por 30 minutos.
-# O bloqueio é por usuário (não por IP) porque, atrás do proxy do Railway, o
-# IP de quem acessa não é confiável sem configuração extra.
-AUTHENTICATION_BACKENDS = [
-    "axes.backends.AxesStandaloneBackend",
-    "django.contrib.auth.backends.ModelBackend",
-]
-AXES_FAILURE_LIMIT = 5
-AXES_COOLOFF_TIME = timedelta(minutes=30)
-AXES_LOCKOUT_PARAMETERS = ["username"]
-AXES_RESET_ON_SUCCESS = True
-AXES_LOCKOUT_TEMPLATE = "bloqueado.html"
-AXES_HTTP_RESPONSE_CODE = 403
-# O aviso axes.W006 pede também o IP; ele é omitido de propósito (ver acima).
-# Com o bloqueio só por usuário, girar o navegador ou os cookies não burla o limite.
-SILENCED_SYSTEM_CHECKS = ["axes.W006"]
+# Bloqueio de login temporário e progressivo (E4.3, D-030): 5 senhas erradas
+# seguidas bloqueiam o usuário por 15 min, depois 1 h, depois 24 h. O controle
+# fica em accounts/bloqueio.py e vale na tela de entrada e em /admin/login/.
+# É por usuário (não por IP) porque, atrás do proxy do Railway, o IP de quem
+# acessa não é confiável sem configuração extra.
+AUTHENTICATION_BACKENDS = ["accounts.backends.ModelBackendComBloqueio"]
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

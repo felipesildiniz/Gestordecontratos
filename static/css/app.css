@@ -93,3 +93,8 @@ input:focus-visible, button:focus-visible, a:focus-visible {
 }
 
 .conteudo { max-width: 960px; margin: 2rem auto; padding: 0 1.5rem; }
+.aviso { background: #fff4e5; border: 1px solid #f0b429; border-radius: 6px; padding: 0.75rem 1rem; margin: 0 0 1rem; }
+
+.qr { display: flex; justify-content: center; margin: 1rem 0; }
+.qr svg { width: 200px; height: 200px; }
+.codigos { columns: 2; padding-left: 1.2rem; font-size: 1.05rem; }

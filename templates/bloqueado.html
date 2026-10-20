@@ -4,7 +4,7 @@
 <main class="cartao-login">
   <h1>Acesso bloqueado</h1>
   <p class="erro" role="alert">Houve muitas tentativas de entrada com senha errada para este usuário.</p>
-  <p>Por segurança, o acesso ficou bloqueado por 30 minutos. Tente de novo depois desse prazo ou procure o administrador do sistema.</p>
+  <p>Por segurança, o acesso a este usuário está bloqueado temporariamente{% if ate %} até <strong>{{ ate|date:"d/m/Y H:i" }}</strong>{% endif %}. Depois desse horário você poderá tentar de novo. Se precisar entrar antes, procure o administrador do sistema.</p>
   <p><a href="{% url 'login' %}">Voltar para a tela de entrada</a></p>
 </main>
 {% endblock %}

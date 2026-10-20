@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block titulo %}Códigos de recuperação — Gestor de Contratos{% endblock %}
+{% block corpo %}
+<main class="cartao-login">
+  <h1>Verificação ativada</h1>
+  <p class="aviso" role="alert">Guarde estes códigos de recuperação em lugar seguro (impressos ou em um gerenciador de senhas). Eles <strong>não serão mostrados de novo</strong>. Cada um vale uma única vez e serve se você perder o celular.</p>
+  <ul class="codigos">
+    {% for codigo in codigos %}<li><code>{{ codigo }}</code></li>{% endfor %}
+  </ul>
+  <a class="botao" href="{% url 'home' %}" style="display:block;text-align:center;text-decoration:none">Já guardei, continuar</a>
+</main>
+{% endblock %}

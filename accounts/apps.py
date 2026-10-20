@@ -20,6 +20,9 @@ class AccountsConfig(AppConfig):
             sender=self,
             dispatch_uid="accounts.criar_perfis",
         )
+        # Bloqueio de login progressivo e aviso na próxima entrada (E4.3).
+        from . import sinais  # noqa: F401
+
         # Quem entra no grupo Admin ganha acesso à área administrativa (P-016).
         from django.contrib.auth import get_user_model
 
