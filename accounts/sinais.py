@@ -18,6 +18,9 @@ def ao_entrar(sender, request=None, user=None, **kwargs):
         return
     nome = user.get_username()
     registrar_sucesso(nome)
+    # Cada entrada nova precisa passar de novo pela verificação em duas etapas.
+    if request is not None and hasattr(request, "session"):
+        request.session.pop("mfa_ok", None)
     # O aviso só é dado (e descontado) quando há onde mostrá-lo.
     if request is None or not hasattr(request, "_messages"):
         return

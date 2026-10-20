@@ -22,6 +22,13 @@ SENHA = "Senha-Forte-123!"
 Usuario = get_user_model()
 
 
+def _entrar(cliente, usuario):
+    cliente.force_login(usuario)
+    sessao = cliente.session
+    sessao["mfa_ok"] = True  # a verificação em duas etapas é testada em accounts
+    sessao.save()
+
+
 def _pg_disponivel():
     try:
         for ferramenta in ("pg_dump", "pg_restore", "psql"):
@@ -47,14 +54,14 @@ class TelaDeBackupAcessoTests(TestCase):
         self.assertTrue(r.url.startswith(reverse("login")))
 
     def test_consulta_recebe_403_no_get_e_no_post(self):
-        self.client.force_login(Usuario.objects.get(username="beto"))
+        _entrar(self.client, Usuario.objects.get(username="beto"))
         self.assertEqual(self.client.get(reverse("backup")).status_code, 403)
         with mock.patch.object(nucleo, "fazer_backup") as fazer:
             self.assertEqual(self.client.post(reverse("backup")).status_code, 403)
             fazer.assert_not_called()
 
     def test_admin_ve_a_pagina_sem_gerar_nada(self):
-        self.client.force_login(Usuario.objects.get(username="ana"))
+        _entrar(self.client, Usuario.objects.get(username="ana"))
         with mock.patch.object(nucleo, "fazer_backup") as fazer:
             r = self.client.get(reverse("backup"))
             fazer.assert_not_called()
@@ -62,16 +69,16 @@ class TelaDeBackupAcessoTests(TestCase):
         self.assertContains(r, "Gerar e baixar backup")
 
     def test_link_do_backup_aparece_so_para_admin(self):
-        self.client.force_login(Usuario.objects.get(username="ana"))
+        _entrar(self.client, Usuario.objects.get(username="ana"))
         self.assertContains(self.client.get(reverse("home")), reverse("backup"))
-        self.client.force_login(Usuario.objects.get(username="beto"))
+        _entrar(self.client, Usuario.objects.get(username="beto"))
         self.assertNotContains(self.client.get(reverse("home")), reverse("backup"))
 
 
 class TelaDeBackupGeracaoTests(TestCase):
     def setUp(self):
         call_command("criar_usuario", usuario="ana", perfil="admin", senha=SENHA)
-        self.client.force_login(Usuario.objects.get(username="ana"))
+        _entrar(self.client, Usuario.objects.get(username="ana"))
 
     def test_falha_do_backup_mostra_o_erro_e_nao_deixa_lixo(self):
         pastas_antes = set(Path(tempfile.gettempdir()).glob("backup-gestor-*"))

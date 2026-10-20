@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.utils import timezone
 
-from . import bloqueio
-from .models import BloqueioLogin
+from . import bloqueio, mfa
+from .models import BloqueioLogin, DispositivoMFA
 
 
 @admin.register(BloqueioLogin)
@@ -33,3 +33,40 @@ class BloqueioLoginAdmin(admin.ModelAdmin):
         for registro in queryset:
             total += bloqueio.desbloquear(registro.usuario)
         self.message_user(request, f"{total} usuário(s) desbloqueado(s).")
+
+
+@admin.register(DispositivoMFA)
+class DispositivoMFAAdmin(admin.ModelAdmin):
+    """Quem ativou a verificação em duas etapas, com a ação de redefinir (E4.3b).
+
+    Redefinir apaga o aplicativo e os códigos de recuperação do usuário; na
+    próxima entrada ele (se for Admin) precisa configurar tudo de novo. Use
+    quando alguém perdeu o celular e os códigos.
+    """
+
+    list_display = ("usuario", "confirmado", "confirmado_em", "codigos_sobrando")
+    search_fields = ("usuario__username",)
+    actions = ["redefinir"]
+    fields = ("usuario", "confirmado", "confirmado_em", "falhas", "bloqueado_ate", "criado_em")
+
+    def get_readonly_fields(self, request, obj=None):
+        return list(self.fields)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
+
+    @admin.display(description="códigos de recuperação sobrando")
+    def codigos_sobrando(self, obj):
+        return mfa.codigos_restantes(obj.usuario)
+
+    @admin.action(description="Redefinir a verificação em duas etapas dos selecionados",
+                  permissions=["change"])
+    def redefinir(self, request, queryset):
+        total = 0
+        for dispositivo in list(queryset):
+            mfa.redefinir(dispositivo.usuario)
+            total += 1
+        self.message_user(request, f"{total} verificação(ões) redefinida(s).")

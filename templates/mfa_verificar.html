@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block titulo %}Verificação em duas etapas — Gestor de Contratos{% endblock %}
+{% block corpo %}
+<main class="cartao-login">
+  <h1>Verificação em duas etapas</h1>
+  <p class="subtitulo">Digite o código do aplicativo autenticador</p>
+  {% for mensagem in messages %}
+    <p class="aviso" role="alert">{{ mensagem }}</p>
+  {% endfor %}
+  {% if bloqueado_ate %}
+    <p class="erro" role="alert">Muitos códigos errados. Tente de novo depois das <strong>{{ bloqueado_ate|date:"H:i" }}</strong>.</p>
+  {% else %}
+    <form method="post" novalidate>
+      {% csrf_token %}
+      {% if erro %}<p class="erro" role="alert">Código incorreto. Tente novamente.</p>{% endif %}
+      <label for="codigo">Código de 6 dígitos ou código de recuperação</label>
+      <input type="text" id="codigo" name="codigo" autocomplete="one-time-code" autofocus>
+      <button type="submit" class="botao">Confirmar</button>
+    </form>
+  {% endif %}
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit" class="link">Sair</button>
+  </form>
+</main>
+{% endblock %}

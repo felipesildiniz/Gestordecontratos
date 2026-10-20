@@ -58,7 +58,15 @@ def garantir_perfis(using="default"):
         content_type__model="bloqueiologin",
         codename__in=["view_bloqueiologin", "change_bloqueiologin"],
     )
-    grupos[ADMIN].permissions.set(list(permissoes_usuario) + list(permissoes_bloqueio))
+    # E redefine a verificação em duas etapas de quem perdeu o aplicativo.
+    permissoes_mfa = Permission.objects.using(using).filter(
+        content_type__app_label="accounts",
+        content_type__model="dispositivomfa",
+        codename__in=["view_dispositivomfa", "change_dispositivomfa"],
+    )
+    grupos[ADMIN].permissions.set(
+        list(permissoes_usuario) + list(permissoes_bloqueio) + list(permissoes_mfa)
+    )
     # Consulta não tem permissões de edição. As de visualização dos cadastros
     # serão acrescentadas aqui nas próximas etapas.
     grupos[CONSULTA].permissions.clear()
