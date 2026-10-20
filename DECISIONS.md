@@ -200,3 +200,8 @@ Registro de decisões técnicas. Estados: ABERTA · PROPOSTA · DECIDIDA · SUBS
 - **Escolhas (confirmadas pelo responsável em 2026-10-20, inclusive 7 dias para zerar a reincidência do login):** TOTP implementado com a biblioteca padrão (sem dependência de MFA); QR por `segno` (puro Python); o segredo fica em texto no banco (quem lê o banco já tem o backup inteiro); códigos de recuperação só como hash; 8 códigos, uso único; 5 códigos errados bloqueiam 15 min; Consulta não usa MFA.
 - **Perda do aplicativo e dos códigos:** outro Admin usa a ação "Redefinir" em `/admin/`; se for o único Admin, comando `python manage.py redefinir_mfa --usuario NOME` no serviço.
 - **Risco aceito:** no primeiro acesso, quem souber a senha do Admin pode cadastrar o próprio aplicativo antes dele; por isso o `CENERY` deve configurar o MFA logo após a E4.3 ir à produção.
+
+### D-032 — Desenho do backup externo (E4.4)
+- **Data:** 2026-10-20. **Status:** ESCRITO NA BRANCH `teste`, NÃO TESTADO.
+- **Decisões do responsável:** conta Google pessoal por ora (destino configurável, trocável por empresarial); backup toda semana; reter só 2 por mês (os mais antigos do mês são apagados).
+- **Escolhas do Claude:** criptografia com o programa `age` (chave pública no servidor, privada só com o responsável; abre-se com `age -d -i chave.txt`); Drive por OAuth com escopo `drive.file` (conta de serviço não tem espaço em Drive pessoal); agendador dentro do serviço `gestor`; só liga com `BACKUP_EXTERNO_ATIVO=True`.

@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E4.4 escrita na branch `teste` (CHECKPOINT, sem teste)
+- Commit `9da00cd`; patch `75c484fe` aguarda o responsável. Criptografia com `age` (chave pública no servidor), envio ao Drive, retenção de 2 por mês, agendador semanal, tela com botão e histórico. Rascunho antigo preservado na branch `e44-rascunho` (só `drive.py`, modelo e testes do Drive foram aproveitados). Produção intacta.
+
 ## 2026-10-20 — E4.3 CONCLUÍDA; E4.4 iniciada (desenho)
 - Responsável confirmou o MFA do `CENERY`. E4.4: conta Google pessoal por ora (trocável); retenção a esclarecer; desenho em `PROJECT_STATE.md`. Nenhum código novo.
 
