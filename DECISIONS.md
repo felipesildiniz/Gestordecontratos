@@ -196,7 +196,7 @@ Registro de decisões técnicas. Estados: ABERTA · PROPOSTA · DECIDIDA · SUBS
 - **Implementação da E4.3a (2026-10-19, branch `teste`, não testada):** modelo próprio `BloqueioLogin` no lugar do `django-axes` (o escalonamento 15 min, 1 h, 24 h e o aviso não cabem no axes sem depender de detalhes internos). Escolha do Claude a confirmar: o nível de reincidência volta a zero depois de 7 dias sem novo bloqueio. O bloqueio continua por usuário (nomes inexistentes também, para não revelar quem tem conta).
 
 ### D-031 — Desenho do MFA (E4.3b)
-- **Data:** 2026-10-20. **Status:** IMPLEMENTADA NA BRANCH `teste`, NÃO TESTADA.
-- **Escolhas do Claude, a confirmar pelo responsável:** TOTP implementado com a biblioteca padrão (sem dependência de MFA); QR por `segno` (puro Python); o segredo fica em texto no banco (quem lê o banco já tem o backup inteiro); códigos de recuperação só como hash; 8 códigos, uso único; 5 códigos errados bloqueiam 15 min; Consulta não usa MFA.
+- **Data:** 2026-10-20. **Status:** IMPLEMENTADA, TESTADA NO `teste` (125/125) e CONFIRMADA pelo responsável; indo à produção.
+- **Escolhas (confirmadas pelo responsável em 2026-10-20, inclusive 7 dias para zerar a reincidência do login):** TOTP implementado com a biblioteca padrão (sem dependência de MFA); QR por `segno` (puro Python); o segredo fica em texto no banco (quem lê o banco já tem o backup inteiro); códigos de recuperação só como hash; 8 códigos, uso único; 5 códigos errados bloqueiam 15 min; Consulta não usa MFA.
 - **Perda do aplicativo e dos códigos:** outro Admin usa a ação "Redefinir" em `/admin/`; se for o único Admin, comando `python manage.py redefinir_mfa --usuario NOME` no serviço.
 - **Risco aceito:** no primeiro acesso, quem souber a senha do Admin pode cadastrar o próprio aplicativo antes dele; por isso o `CENERY` deve configurar o MFA logo após a E4.3 ir à produção.

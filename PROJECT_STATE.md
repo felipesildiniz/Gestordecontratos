@@ -54,9 +54,8 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 — Acesso seguro. **E4.3a (bloqueio progressivo + aviso): CONCLUÍDA NO `teste` em 2026-10-19** (95/95, deploy `5aa0846e`, commit `01a303d`). **E4.3b (MFA): testes automáticos OK no `teste` (125/125, deploy `1c949f38`, commit `a0afa8e`, migração `0002_mfa` aplicada); FALTA a conferência na tela pelo responsável (PRECISA REVISÃO até lá).**
-- ÚLTIMO PONTO CONCLUÍDO: E4.3b escrita: `accounts/mfa.py` (TOTP RFC 6238 só com a biblioteca padrão, códigos de recuperação com hash, bloqueio de 15 min após 5 códigos errados), modelos `DispositivoMFA` e `CodigoRecuperacao` (migração `0002_mfa`), middleware `ExigirMFAParaAdmin`, telas `/mfa/configurar/` (QR via `segno`, entrega 8 códigos uma vez) e `/mfa/verificar/`, ação "Redefinir" em `/admin/` e comando `redefinir_mfa`. 30 testes novos (um com o vetor oficial da RFC).
-- A PRODUÇÃO (branch `main`) NÃO recebeu a E4.3 e segue com o axes. Só vai depois de E4.3a e E4.3b passarem no `teste`.
-- PONTO EXATO ONDE PAROU: `teste` no ar com MFA; aguardando o responsável entrar com `admin_ficticio` e conferir a tela.
-- ERROS CONHECIDOS: nenhum. Ruído inofensivo no log do `teste`: "O usuário 'admin_ficticio' já existe" a cada início.
-- PRÓXIMA AÇÃO: responsável testa na tela com `admin_ficticio` (QR, códigos, bloqueio de 5 erros); então levar a E4.3 à produção, com o `CENERY` configurando o aplicativo no primeiro acesso.
+- ETAPA: E4.3 — Acesso seguro (E4.3a bloqueio progressivo + E4.3b MFA). **E4.3a e E4.3b: CONCLUÍDAS NO `teste`** (125/125, deploy `1c949f38`); o responsável confirmou o funcionamento e aprovou as escolhas (7 dias para zerar a reincidência; segredo do aplicativo em texto no banco, D-031). **Levada à produção: CHECKPOINT.**
+- ÚLTIMO PONTO CONCLUÍDO: `teste` mesclada em `main` (commit `3d03340`, enviado ao GitHub); mudança de deploy da PRODUÇÃO preparada só para o ambiente `production` (patch `226f9f83`), aguardando o responsável aplicar.
+- PONTO EXATO ONDE PAROU: aguardando a aplicação do patch `226f9f83` na produção.
+- ERROS CONHECIDOS: nenhum.
+- PRÓXIMA AÇÃO: responsável aplica o patch; Claude lê o log da produção (esperado 125 testes, migrações `accounts.0001` e `0002`); o `CENERY` entra e configura o aplicativo autenticador, guardando os 8 códigos de recuperação. Depois, marcar E4.3 CONCLUÍDA e seguir para a E4.4 (backup semanal no Google Drive).
