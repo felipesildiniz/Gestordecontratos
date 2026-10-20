@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E4.3b: 125/125 testes no `teste`
+- **Resultado:** deploy `1c949f38` (commit `a0afa8e`): 125 testes OK, migração `accounts.0002_mfa` aplicada, `teste` no ar. Falta a conferência na tela. Produção intacta.
+
 ## 2026-10-20 — E4.3b escrita na branch `teste` (CHECKPOINT, ainda sem teste)
 - **Implementado (commit `a0afa8e`, só em `teste`):** MFA TOTP obrigatório para todo Admin, com 8 códigos de recuperação (só o hash fica no banco), exigido por middleware em todas as páginas; configuração no primeiro acesso (QR com `segno` + chave para digitar); 5 códigos errados bloqueiam 15 min (contagem própria, não zera ao digitar a senha de novo); ação "Redefinir" em `/admin/` e comando `redefinir_mfa` para quem perdeu o celular; código do aplicativo não pode ser reutilizado. Migração `accounts.0002_mfa`; dependência nova `segno`.
 - **Testes:** 33 novos e ajuste dos existentes (helper de login de Admin marca a sessão como verificada). Não rodados: deploy preparado (patch `19a5eb0f`) aguarda o responsável aplicar.
