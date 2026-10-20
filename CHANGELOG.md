@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E4.3 CONCLUÍDA; E4.4 iniciada (desenho)
+- Responsável confirmou o MFA do `CENERY`. E4.4: conta Google pessoal por ora (trocável); retenção a esclarecer; desenho em `PROJECT_STATE.md`. Nenhum código novo.
+
 ## 2026-10-20 — E4.3 no ar na produção
 - Deploy `6167d5fb` (commit `99240cd`): 125/125 testes, migrações `accounts.0001` e `0002` aplicadas, armazenamento persistente, serviço no ar. Falta o `CENERY` configurar o MFA.
 

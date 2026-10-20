@@ -54,11 +54,7 @@ def _configuracao_do_banco():
     }
 
 
-def _zipar_backup(pasta_backup, destino_zip):
-    """Junta a pasta do backup em um único .zip (sem recompactar o que já é compactado)."""
-    with zipfile.ZipFile(destino_zip, "w", zipfile.ZIP_STORED, allowZip64=True) as z:
-        for arquivo in sorted(pasta_backup.iterdir()):
-            z.write(arquivo, f"{pasta_backup.name}/{arquivo.name}")
+_zipar_backup = nucleo.zipar_backup
 
 
 @login_required

@@ -54,8 +54,9 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 — Acesso seguro (E4.3a bloqueio progressivo + E4.3b MFA). **E4.3a e E4.3b: CONCLUÍDAS NO `teste`** (125/125, deploy `1c949f38`); o responsável confirmou o funcionamento e aprovou as escolhas (7 dias para zerar a reincidência; segredo do aplicativo em texto no banco, D-031). **Produção: NO AR com a E4.3 (deploy `6167d5fb`, commit `99240cd`, 125/125, migrações `accounts.0001` e `0002` aplicadas, armazenamento persistente OK). PRECISA REVISÃO até o `CENERY` configurar o aplicativo.**
-- ÚLTIMO PONTO CONCLUÍDO: produção atualizada e no ar com bloqueio progressivo e MFA.
-- PONTO EXATO ONDE PAROU: aguardando o `CENERY` entrar e configurar o aplicativo autenticador (e guardar os 8 códigos de recuperação).
+- ETAPA: E4.3 **CONCLUÍDA** em 2026-10-20 (produção no ar, 125/125; o responsável configurou o MFA do `CENERY`). **E4.4 (backup semanal no Google Drive): EM ANDAMENTO, só desenho; nenhum código.**
+- ÚLTIMO PONTO CONCLUÍDO: E4.3 em produção. Respostas da E4.4: conta Google **pessoal por ora** (trocar por empresarial depois, então o destino deve ser configurável); retenção: "dois backups semanais ao mês" (AMBÍGUO, perguntar).
+- DESENHO PROPOSTO E4.4: criptografia com `age` (biblioteca `pyrage`): o servidor guarda só a chave pública (variável de ambiente), a privada fica só com o responsável; envio ao Drive por OAuth (escopo `drive.file`, token de renovação em variável de ambiente; o app OAuth precisa estar "Em produção", senão o token expira em 7 dias); agendamento por tarefa dentro do serviço `gestor` (o volume só se liga a ele), ligado só na produção; falha mostrada na tela de backup.
+- PONTO EXATO ONDE PAROU: aguardando o responsável esclarecer a retenção e criar o acesso no Google (passos enviados na conversa).
 - ERROS CONHECIDOS: nenhum.
-- PRÓXIMA AÇÃO: `CENERY` configura o MFA; então marcar E4.3 CONCLUÍDA e iniciar a E4.4 (backup semanal no Google Drive; decisões em aberto: conta do Google, forma de envio, retenção, guarda da chave privada).
+- PRÓXIMA AÇÃO: com retenção e credenciais, implementar a E4.4 primeiro no `teste` (com uma pasta de teste no Drive), depois produção.
