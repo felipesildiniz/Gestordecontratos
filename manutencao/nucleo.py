@@ -201,6 +201,14 @@ def verificar_backup(pasta):
     return problemas
 
 
+def zipar_backup(pasta_backup, destino_zip):
+    """Junta a pasta do backup em um único .zip (sem recompactar o que já é compactado)."""
+    pasta_backup = Path(pasta_backup)
+    with zipfile.ZipFile(destino_zip, "w", zipfile.ZIP_STORED, allowZip64=True) as z:
+        for arquivo in sorted(pasta_backup.iterdir()):
+            z.write(arquivo, f"{pasta_backup.name}/{arquivo.name}")
+
+
 def fazer_backup(cfg, pasta_projeto, pasta_arquivos, pasta_backup,
                  pasta_copia=None, manter=30, pg_bin=None, agora=None,
                  incluir_projeto=True):
