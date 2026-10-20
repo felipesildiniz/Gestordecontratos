@@ -17,12 +17,14 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
 from django.db import connection
 from django.http import FileResponse
-from django.shortcuts import render
+from django.contrib import messages
+from django.shortcuts import redirect, render
 
 from accounts.perfis import eh_admin
 from config.env import texto
 
-from . import nucleo
+from . import externo, nucleo
+from .models import ExecucaoBackup
 
 logger = logging.getLogger(__name__)
 
@@ -66,12 +68,13 @@ def backup(request):
     if not eh_admin(request.user):
         raise PermissionDenied
     if request.method != "POST":
-        return render(request, "backup.html")
+        return render(request, "backup.html", _contexto_externo())
 
     if not _em_andamento.acquire(blocking=False):
         return render(
             request, "backup.html",
-            {"erro": "Já existe um backup sendo gerado. Aguarde e tente de novo."},
+            {"erro": "Já existe um backup sendo gerado. Aguarde e tente de novo.",
+             **_contexto_externo()},
             status=409,
         )
     pasta = Path(tempfile.mkdtemp(prefix="backup-gestor-"))
@@ -107,3 +110,39 @@ def backup(request):
         _em_andamento.release()
         if not entregue:
             shutil.rmtree(pasta, ignore_errors=True)
+
+
+def _contexto_externo():
+    return {
+        "externo_ativo": externo.ativo(),
+        "execucoes": list(ExecucaoBackup.objects.all()[:5]),
+    }
+
+
+@login_required
+def backup_externo(request):
+    """Dispara agora o backup criptografado para o Google Drive (roda em segundo plano)."""
+    if not eh_admin(request.user):
+        raise PermissionDenied
+    if request.method != "POST":
+        return redirect("backup")
+
+    def rodar():
+        from django.db import close_old_connections
+
+        try:
+            externo.executar("manual")
+        except externo.ErroExterno as erro:
+            logger.warning("Backup externo manual: %s", erro)
+        except Exception:  # noqa: BLE001
+            logger.exception("Backup externo manual: erro inesperado")
+        finally:
+            close_old_connections()
+
+    threading.Thread(target=rodar, daemon=True).start()
+    messages.info(
+        request,
+        "Backup para o Google Drive iniciado. Ele leva alguns minutos; recarregue "
+        "esta página para ver o resultado na lista abaixo.",
+    )
+    return redirect("backup")

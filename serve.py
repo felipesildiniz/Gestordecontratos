@@ -34,6 +34,13 @@ def main():
 
     from config.wsgi import application
 
+    if booleano("BACKUP_EXTERNO_ATIVO", False):
+        import threading
+
+        from manutencao import agendador
+
+        threading.Thread(target=agendador.loop, name="backup-externo", daemon=True).start()
+
     host = texto("SERVIDOR_HOST", "0.0.0.0")
     # Em hospedagens como o Railway a porta vem na variável PORT.
     porta = int(texto("PORT") or texto("SERVIDOR_PORTA", "8000"))

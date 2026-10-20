@@ -1,6 +1,7 @@
 # Imagem do Gestor de Contratos para o Railway (D-027).
 # Inclui o cliente do PostgreSQL 18 (pg_dump, pg_restore, psql), na mesma
-# versão do banco do Railway, para a tela de backup do sistema.
+# versão do banco do Railway, para a tela de backup do sistema, e o `age`,
+# que criptografa o backup enviado ao Google Drive (E4.4).
 FROM python:3.13-slim
 
 ENV PYTHONUNBUFFERED=1 \
@@ -16,7 +17,7 @@ RUN apt-get update \
     && echo "deb [signed-by=/usr/share/postgresql-common/pgdg/apt.postgresql.org.asc] https://apt.postgresql.org/pub/repos/apt ${VERSION_CODENAME}-pgdg main" \
         > /etc/apt/sources.list.d/pgdg.list \
     && apt-get update \
-    && apt-get install -y --no-install-recommends postgresql-client-18 \
+    && apt-get install -y --no-install-recommends postgresql-client-18 age \
     && apt-get purge -y --auto-remove curl gnupg \
     && rm -rf /var/lib/apt/lists/*
 

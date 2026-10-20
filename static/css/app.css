@@ -98,3 +98,6 @@ input:focus-visible, button:focus-visible, a:focus-visible {
 .qr { display: flex; justify-content: center; margin: 1rem 0; }
 .qr svg { width: 200px; height: 200px; }
 .codigos { columns: 2; padding-left: 1.2rem; font-size: 1.05rem; }
+
+.tabela { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+.tabela th, .tabela td { text-align: left; padding: .4rem .5rem; border-bottom: 1px solid var(--borda); }

@@ -13,6 +13,9 @@
 </header>
 <main class="conteudo">
   <h1>Backup</h1>
+  {% for mensagem in messages %}
+    <p class="aviso" role="alert">{{ mensagem }}</p>
+  {% endfor %}
   {% if erro %}
     <p class="erro" role="alert">{{ erro }}</p>
   {% endif %}
@@ -26,5 +29,26 @@
     {% csrf_token %}
     <button type="submit" class="botao" style="max-width: 22rem;">Gerar e baixar backup</button>
   </form>
+  <h2>Cópia semanal no Google Drive</h2>
+  <p>{% if externo_ativo %}O envio automático está <strong>ligado</strong>: toda semana, de madrugada, o sistema envia ao Google Drive uma cópia <strong>criptografada</strong> (só quem tem a chave privada consegue abrir) e guarda os 2 backups mais recentes de cada mês.{% else %}O envio automático está <strong>desligado</strong> neste ambiente.{% endif %}</p>
+  <form method="post" action="{% url 'backup_externo' %}">
+    {% csrf_token %}
+    <button type="submit" class="botao" style="max-width: 22rem;">Enviar agora para o Google Drive</button>
+  </form>
+  {% if execucoes %}
+  <table class="tabela">
+    <thead><tr><th>Início</th><th>Origem</th><th>Resultado</th><th>Arquivo</th></tr></thead>
+    <tbody>
+    {% for e in execucoes %}
+      <tr>
+        <td>{{ e.inicio|date:"d/m/Y H:i" }}</td>
+        <td>{{ e.origem }}</td>
+        <td>{% if e.sucesso is None %}em andamento{% elif e.sucesso %}OK{% else %}<span class="erro">falhou</span>: {{ e.mensagem }}{% endif %}</td>
+        <td>{{ e.arquivo }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% else %}<p>Nenhum envio feito ainda.</p>{% endif %}
 </main>
 {% endblock %}
