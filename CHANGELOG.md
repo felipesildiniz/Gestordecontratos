@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E4.4: 169/169 testes no `teste`
+- Deploy `1bd988bf` (commit `9da00cd`): 169 testes OK (inclui ida e volta real com o `age`), migração `manutencao.0001` aplicada, `teste` no ar. Falta o envio real ao Drive. Produção intacta.
+
 ## 2026-10-20 — E4.4 escrita na branch `teste` (CHECKPOINT, sem teste)
 - Commit `9da00cd`; patch `75c484fe` aguarda o responsável. Criptografia com `age` (chave pública no servidor), envio ao Drive, retenção de 2 por mês, agendador semanal, tela com botão e histórico. Rascunho antigo preservado na branch `e44-rascunho` (só `drive.py`, modelo e testes do Drive foram aproveitados). Produção intacta.
 
