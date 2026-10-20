@@ -54,8 +54,9 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 — Acesso seguro. **E4.3a (bloqueio progressivo + aviso): CONCLUÍDA NO `teste` em 2026-10-19** (95/95 testes no deploy `5aa0846e`, commit `01a303d`, migração `accounts.0001` aplicada, `teste` no ar). **E4.3b (MFA): EM ANDAMENTO.**
-- ÚLTIMO PONTO CONCLUÍDO: E4.3a no `teste`: bloqueio 15 min, 1 h, 24 h; aviso na próxima entrada; ação "Desbloquear" em `/admin/`; comando `desbloquear_usuario`; `django-axes` removido. Falta só o responsável conferir na tela (ver abaixo).
-- A PRODUÇÃO (branch `main`) NÃO recebeu a E4.3 e segue com o axes (bloqueio fixo de 30 min). A E4.3 só vai à produção quando E4.3a e E4.3b passarem no `teste`.
-- PONTO EXATO ONDE PAROU: início da E4.3b (ver CHANGELOG para o estado do código do MFA).
-- PRÓXIMA AÇÃO: concluir e testar a E4.3b no `teste`; conferir à mão no `teste` a tela de bloqueio (5 senhas erradas para `admin_ficticio`, ou outro usuário do teste) e o aviso.
+- ETAPA: E4.3 — Acesso seguro. **E4.3a (bloqueio progressivo + aviso): CONCLUÍDA NO `teste` em 2026-10-19** (95/95, deploy `5aa0846e`, commit `01a303d`). **E4.3b (MFA): CHECKPOINT — código escrito na branch `teste` (commit `a0afa8e`), deploy preparado (patch `19a5eb0f`), AINDA NÃO TESTADO.**
+- ÚLTIMO PONTO CONCLUÍDO: E4.3b escrita: `accounts/mfa.py` (TOTP RFC 6238 só com a biblioteca padrão, códigos de recuperação com hash, bloqueio de 15 min após 5 códigos errados), modelos `DispositivoMFA` e `CodigoRecuperacao` (migração `0002_mfa`), middleware `ExigirMFAParaAdmin`, telas `/mfa/configurar/` (QR via `segno`, entrega 8 códigos uma vez) e `/mfa/verificar/`, ação "Redefinir" em `/admin/` e comando `redefinir_mfa`. 33 testes novos (um com o vetor oficial da RFC).
+- A PRODUÇÃO (branch `main`) NÃO recebeu a E4.3 e segue com o axes. Só vai depois de E4.3a e E4.3b passarem no `teste`.
+- PONTO EXATO ONDE PAROU: aguardando o responsável aplicar o patch `19a5eb0f` no `teste` para rodar os testes (o Claude não roda o Django localmente).
+- ERROS CONHECIDOS: nenhum conhecido; nada executado ainda. Ruído inofensivo no log do `teste`: "O usuário 'admin_ficticio' já existe" a cada início.
+- PRÓXIMA AÇÃO: responsável aplica o patch; Claude lê o log (esperado ~128 testes); depois o responsável testa na tela com `admin_ficticio` (QR, códigos, bloqueio de 5 erros); então levar a E4.3 à produção, com o `CENERY` configurando o aplicativo no primeiro acesso.
