@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E4.3 no ar na produção
+- Deploy `6167d5fb` (commit `99240cd`): 125/125 testes, migrações `accounts.0001` e `0002` aplicadas, armazenamento persistente, serviço no ar. Falta o `CENERY` configurar o MFA.
+
 ## 2026-10-20 — E4.3 enviada para a produção (CHECKPOINT)
 - `teste` mesclada em `main` (`3d03340`). Patch `226f9f83` preparado só para `production`; aguarda o responsável aplicar. Escolhas confirmadas: reincidência zera em 7 dias; segredo do MFA em texto no banco.
 

@@ -54,8 +54,8 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 — Acesso seguro (E4.3a bloqueio progressivo + E4.3b MFA). **E4.3a e E4.3b: CONCLUÍDAS NO `teste`** (125/125, deploy `1c949f38`); o responsável confirmou o funcionamento e aprovou as escolhas (7 dias para zerar a reincidência; segredo do aplicativo em texto no banco, D-031). **Levada à produção: CHECKPOINT.**
-- ÚLTIMO PONTO CONCLUÍDO: `teste` mesclada em `main` (commit `3d03340`, enviado ao GitHub); mudança de deploy da PRODUÇÃO preparada só para o ambiente `production` (patch `226f9f83`), aguardando o responsável aplicar.
-- PONTO EXATO ONDE PAROU: aguardando a aplicação do patch `226f9f83` na produção.
+- ETAPA: E4.3 — Acesso seguro (E4.3a bloqueio progressivo + E4.3b MFA). **E4.3a e E4.3b: CONCLUÍDAS NO `teste`** (125/125, deploy `1c949f38`); o responsável confirmou o funcionamento e aprovou as escolhas (7 dias para zerar a reincidência; segredo do aplicativo em texto no banco, D-031). **Produção: NO AR com a E4.3 (deploy `6167d5fb`, commit `99240cd`, 125/125, migrações `accounts.0001` e `0002` aplicadas, armazenamento persistente OK). PRECISA REVISÃO até o `CENERY` configurar o aplicativo.**
+- ÚLTIMO PONTO CONCLUÍDO: produção atualizada e no ar com bloqueio progressivo e MFA.
+- PONTO EXATO ONDE PAROU: aguardando o `CENERY` entrar e configurar o aplicativo autenticador (e guardar os 8 códigos de recuperação).
 - ERROS CONHECIDOS: nenhum.
-- PRÓXIMA AÇÃO: responsável aplica o patch; Claude lê o log da produção (esperado 125 testes, migrações `accounts.0001` e `0002`); o `CENERY` entra e configura o aplicativo autenticador, guardando os 8 códigos de recuperação. Depois, marcar E4.3 CONCLUÍDA e seguir para a E4.4 (backup semanal no Google Drive).
+- PRÓXIMA AÇÃO: `CENERY` configura o MFA; então marcar E4.3 CONCLUÍDA e iniciar a E4.4 (backup semanal no Google Drive; decisões em aberto: conta do Google, forma de envio, retenção, guarda da chave privada).
