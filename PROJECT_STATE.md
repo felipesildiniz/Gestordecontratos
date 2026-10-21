@@ -54,9 +54,9 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 **CONCLUÍDA** em 2026-10-20. **E4.4 (backup no Google Drive): CANCELADA pelo responsável em 2026-10-20 (D-033).** O backup passa a ser **somente manual**: o Admin baixa o `.zip` pelo botão da tela "Backup" (D-027) e guarda no computador.
-- ÚLTIMO PONTO CONCLUÍDO: código da E4.4 arquivado na branch `e44-drive-arquivado` (commit `9da00cd`, 169/169 no `teste`) e removido da linha principal: a branch `teste` foi igualada à `main` (`e1d2b0b`). Mudança do `teste` preparada (patch `5839dce3`), aguarda o responsável aplicar. A produção nunca recebeu a E4.4.
-- PONTO EXATO ONDE PAROU: aguardando o responsável aplicar o patch `5839dce3` no `teste` e escolher a próxima etapa (proposta: E5, cadastro de contratos).
-- ERROS CONHECIDOS: nenhum. Resíduo inofensivo: a tabela `manutencao_execucaobackup` e o registro da migração `manutencao.0001` ficam órfãos no banco do `teste`.
-- RISCO ACEITO (D-033): sem cópia automática fora do Railway, os dados só estão protegidos pelo que o responsável baixar. Dados reais exigem uma rotina de download definida por ele.
-- PRÓXIMA AÇÃO: aplicar o patch no `teste`; iniciar a E5 (cadastro de contratos) no `teste`.
+- ETAPA: **E5 — Cadastro de contratos, dividida em E5a a E5d (D-034). E5a: CHECKPOINT** — código escrito na branch `teste` (commit `5b848ab`), deploy preparado (patch `7d7cfda7`), AINDA NÃO TESTADO. E4.3 CONCLUÍDA; E4.4 CANCELADA (D-033).
+- ÚLTIMO PONTO CONCLUÍDO: E5a escrita: app `contratos` (modelos `Modalidade` com carga inicial AD/CE/CH/PE/INEX, `Contratado`, `Contrato` com número montado pelo sistema e vigência original preservada; restrições no banco), validação de CPF/CNPJ, telas lista (busca e paginação), detalhe, novo, editar, excluir (confirmação), permissões (Admin: ver, criar, editar, excluir; Consulta: só ver), link na página inicial. Teste que garante que não há migração pendente.
+- PONTO EXATO ONDE PAROU: aguardando o responsável aplicar o patch `7d7cfda7` no `teste`.
+- ERROS CONHECIDOS: nenhum conhecido; nada executado ainda.
+- LIMITAÇÕES DA E5a (por desenho, resolvidas nas próximas): sem PDF (E5b; **não levar à produção antes da E5b**, pois o PDF é obrigatório, RN-15); sem gestor/fiscal (E5c); editar a vigência final por esta tela é permitido até a E6 (prorrogações) assumir essa alteração.
+- PRÓXIMA AÇÃO: ler o log do deploy (esperado ~215 testes); o responsável cadastra um contrato fictício no `teste`; seguir para a E5b (PDF).

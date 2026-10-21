@@ -12,7 +12,11 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | CONCLUÍDA (2026-10-19) |
 | E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso na próxima entrada e MFA por aplicativo autenticador com códigos de recuperação para todo Admin; desbloqueio manual pelo Admin (D-030) | CONCLUÍDA em 2026-10-20 (produção e `teste`, 125/125; MFA do `CENERY` configurado pelo responsável) |
 | E4.4 | Backup externo criptografado | Backup semanal criptografado no Google Drive (D-029) | CANCELADA pelo responsável em 2026-10-20 (D-033): backup só manual, baixado pelo botão da tela; código arquivado na branch `e44-drive-arquivado` |
-| E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
+| E5 | Cadastro de contratos | Dividida em E5a a E5d (D-034) | EM ANDAMENTO |
+| E5a | Contratos: dados obrigatórios | Modelo, número `N°.SIGLA.NÚMERO/ANO`, contratado por CPF/CNPJ, lista com busca, detalhe, criar, editar e excluir (Admin), Consulta só vê; sem PDF | CHECKPOINT (código na branch `teste`, aguardando teste) |
+| E5b | Contratos: PDF obrigatório | Upload do PDF do contrato (só PDF, até 10 MB, obrigatório), substituição, download protegido, exclusão física junto com o contrato | NÃO INICIADA |
+| E5c | Contratos: gestor, fiscal e complementos | Gestor, fiscal e demais responsáveis com cargo e período | NÃO INICIADA |
+| E5d | Contratos: dotações, parcelas, garantias e itens | Campos complementares opcionais restantes | NÃO INICIADA |
 | E6 | Vigências e prorrogações | Prazos, prorrogações e alertas 90/30/15 dias | NÃO INICIADA |
 | E7 | Termos aditivos | Aditivos vinculados a contratos | NÃO INICIADA |
 | E8 | Atas e saldos | Atas ligadas ao Pregão Eletrônico, saldos e consumo pelos contratos (D-017) | NÃO INICIADA |

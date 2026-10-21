@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-20 — E5a escrita na branch `teste` (CHECKPOINT, sem teste)
+- Commit `5b848ab`; patch `7d7cfda7` aguarda o responsável. Cadastro de contratos sem PDF. Produção intacta.
+
 ## 2026-10-21 — E4.4 CANCELADA (D-033)
 - O responsável decidiu não usar o Google Drive: o backup será só manual (botão da tela). Código arquivado em `e44-drive-arquivado`; `teste` igualada à `main`; patch `5839dce3` aguarda aplicação. Produção intacta.
 

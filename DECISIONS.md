@@ -210,3 +210,8 @@ Registro de decisões técnicas. Estados: ABERTA · PROPOSTA · DECIDIDA · SUBS
 - **Data:** 2026-10-21. **Status:** DECIDIDA. Substitui D-029 e D-032.
 - **Decisão do responsável:** não haverá envio ao Google Drive. O backup é feito só quando precisar, clicando no botão da tela "Backup" e guardando o `.zip` no computador (D-027).
 - **Consequências:** a E4.4 sai do plano; o código (criptografia com `age`, cliente do Drive, agendador) ficou arquivado na branch `e44-drive-arquivado` e pode ser retomado. A produção nunca o recebeu. Risco aceito: sem rotina, nada protege os dados se o Railway perder o volume; recomenda-se definir quem baixa o backup e com que frequência antes de dados reais.
+
+### D-034 — Desenho do cadastro de contratos (E5)
+- **Data:** 2026-10-20. **Status:** E5a ESCRITA NA BRANCH `teste`, NÃO TESTADA.
+- **Divisão:** E5a dados obrigatórios; E5b PDF; E5c gestor/fiscal; E5d dotações, parcelas, garantias e itens. A produção só recebe o cadastro depois da E5b (PDF obrigatório, RN-15).
+- **Escolhas do Claude, a confirmar:** (1) o N° (sequencial) vem sugerido (próximo do ano) mas pode ser alterado, para permitir cadastrar contratos antigos; é único por ano. (2) O contratado é identificado pelo CPF/CNPJ digitado: se já existe, é reaproveitado e a razão social é atualizada com o que foi digitado. (3) Vigência final: o campo "original" nunca muda; a edição da vigente pela tela de edição fica permitida até a E6. (4) Exclusão: só Admin, com tela de confirmação, definitiva. (5) Regra extra do banco: vigência final não pode ser anterior à assinatura nem ao início (premissa de DATABASE.md). (6) Consulta vê todos os contratos; só Admin altera.
