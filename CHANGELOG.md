@@ -2,6 +2,9 @@
 
 Registro cronológico, mais recente primeiro.
 
+## 2026-10-21 — E4.4 CANCELADA (D-033)
+- O responsável decidiu não usar o Google Drive: o backup será só manual (botão da tela). Código arquivado em `e44-drive-arquivado`; `teste` igualada à `main`; patch `5839dce3` aguarda aplicação. Produção intacta.
+
 ## 2026-10-20 — E4.4: 169/169 testes no `teste`
 - Deploy `1bd988bf` (commit `9da00cd`): 169 testes OK (inclui ida e volta real com o `age`), migração `manutencao.0001` aplicada, `teste` no ar. Falta o envio real ao Drive. Produção intacta.
 

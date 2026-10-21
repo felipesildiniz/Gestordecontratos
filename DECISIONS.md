@@ -205,3 +205,8 @@ Registro de decisões técnicas. Estados: ABERTA · PROPOSTA · DECIDIDA · SUBS
 - **Data:** 2026-10-20. **Status:** ESCRITO NA BRANCH `teste`, NÃO TESTADO.
 - **Decisões do responsável:** conta Google pessoal por ora (destino configurável, trocável por empresarial); backup toda semana; reter só 2 por mês (os mais antigos do mês são apagados).
 - **Escolhas do Claude:** criptografia com o programa `age` (chave pública no servidor, privada só com o responsável; abre-se com `age -d -i chave.txt`); Drive por OAuth com escopo `drive.file` (conta de serviço não tem espaço em Drive pessoal); agendador dentro do serviço `gestor`; só liga com `BACKUP_EXTERNO_ATIVO=True`.
+
+### D-033 — Cancelada a cópia automática no Google Drive; backup só manual
+- **Data:** 2026-10-21. **Status:** DECIDIDA. Substitui D-029 e D-032.
+- **Decisão do responsável:** não haverá envio ao Google Drive. O backup é feito só quando precisar, clicando no botão da tela "Backup" e guardando o `.zip` no computador (D-027).
+- **Consequências:** a E4.4 sai do plano; o código (criptografia com `age`, cliente do Drive, agendador) ficou arquivado na branch `e44-drive-arquivado` e pode ser retomado. A produção nunca o recebeu. Risco aceito: sem rotina, nada protege os dados se o Railway perder o volume; recomenda-se definir quem baixa o backup e com que frequência antes de dados reais.

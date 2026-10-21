@@ -11,7 +11,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E4.1 | Backup local | Script de backup do banco, dos PDFs e da pasta do projeto, com restauração testada; obrigatório antes de dados reais (D-012, D-022) | PRECISA REVISÃO (código e restauração testados com PostgreSQL 16 no Linux; falta validar os .bat e o agendamento no Windows) |
 | E4.2 | Preparar para a internet | HTTPS obrigatório, limite de tentativas de senha, PDFs em armazenamento persistente, backup em nuvem, GitHub como repositório oficial, ambiente de produção separado do de teste (D-024) | CONCLUÍDA (2026-10-19) |
 | E4.3 | Acesso seguro | Bloqueio progressivo (5 tentativas, 15 min, 1 h, 24 h), aviso na próxima entrada e MFA por aplicativo autenticador com códigos de recuperação para todo Admin; desbloqueio manual pelo Admin (D-030) | CONCLUÍDA em 2026-10-20 (produção e `teste`, 125/125; MFA do `CENERY` configurado pelo responsável) |
-| E4.4 | Backup externo criptografado | Backup semanal criptografado no Google Drive, chave privada só do responsável; opcional terceira cópia em HD externo (D-029) | EM ANDAMENTO (desenho; aguarda a retenção e os passos do Google) |
+| E4.4 | Backup externo criptografado | Backup semanal criptografado no Google Drive (D-029) | CANCELADA pelo responsável em 2026-10-20 (D-033): backup só manual, baixado pelo botão da tela; código arquivado na branch `e44-drive-arquivado` |
 | E5 | Cadastro de contratos | CRUD de contratos | NÃO INICIADA |
 | E6 | Vigências e prorrogações | Prazos, prorrogações e alertas 90/30/15 dias | NÃO INICIADA |
 | E7 | Termos aditivos | Aditivos vinculados a contratos | NÃO INICIADA |
@@ -21,7 +21,7 @@ Estados: NÃO INICIADA · EM ANDAMENTO · CHECKPOINT · BLOQUEADA · PRECISA REV
 | E11 | Auditoria | Log de alterações | NÃO INICIADA |
 | E12 | Relatórios | Relatórios e exportação | NÃO INICIADA |
 
-A E4.3 e a E4.4 devem estar prontas antes de dados reais. A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e testado no Railway (D-024); a E4.2 deve vir antes de dados reais e, de preferência, antes da E9 (upload de PDFs).
+A E4.3 está pronta; a E4.4 foi cancelada (D-033), então o backup é só o manual da tela. A ordem de E5 a E12 é provisória. Desde 2026-10-17 o sistema é construído e testado no Railway (D-024); a E4.2 deve vir antes de dados reais e, de preferência, antes da E9 (upload de PDFs).
 
 ## E3 — Modelo de dados (CONCLUÍDA em 2026-10-03)
 - Modelo lógico de 12 tabelas em DATABASE.md, revisado e ajustado com as respostas do responsável. Nenhum código.

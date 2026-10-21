@@ -54,10 +54,9 @@ Contratos · Atas e saldos · Vigências · Termos aditivos · Documentos · Ale
 - Resolvidos: P-001 (stack), P-002 (perfis), P-003 (repositório), P-006 (formato do número), P-009 (exclusão de contrato), P-010 (PE, INEX e ata), P-011 (PDF único), P-012 (código local).
 
 ## Checkpoint
-- ETAPA: E4.3 **CONCLUÍDA** em 2026-10-20. **E4.4 (backup semanal criptografado no Google Drive): testes automáticos OK no `teste` (169/169, deploy `1bd988bf`, commit `9da00cd`, migração `manutencao.0001` aplicada, `age` instalado na imagem); FALTA o envio real ao Drive (PRECISA REVISÃO até lá).**
-- ÚLTIMO PONTO CONCLUÍDO: E4.4 escrita: `manutencao/cripto.py` (programa `age` instalado no Dockerfile; servidor só tem a chave pública), `drive.py` (cliente do Drive por OAuth, só biblioteca padrão; aproveitado do rascunho da branch `e44-rascunho` após revisão), `externo.py` (gera backup, zipa, criptografa, envia, retenção 2 por mês), `agendador.py` (thread no `serve.py`, madrugada 1h-6h, a cada 6 dias e 20 h, retenta após 6 h), modelo `ExecucaoBackup` (migração `manutencao.0001`), comando `backup_externo`, botão e lista de envios na tela de backup. Testes novos: cripto (ida e volta real com age), retenção, execução, agendador, tela.
-- Regra de retenção (responsável, 2026-10-20): backup toda semana; guardar só 2 por mês, apagando os mais antigos do mês. Só apaga depois de o novo estar no Drive; arquivos fora do padrão de nome nunca são apagados.
-- A PRODUÇÃO não recebeu a E4.4. O envio só liga com `BACKUP_EXTERNO_ATIVO=True` e as variáveis `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH_TOKEN`, `BACKUP_CHAVE_PUBLICA` (e opcional `BACKUP_DRIVE_PASTA`).
-- PONTO EXATO ONDE PAROU: `teste` no ar com a E4.4; o responsável já gerou o par de chaves `age`; falta ele obter o refresh token do Google (OAuth Playground) e colocar as 4 variáveis no `teste`.
-- ERROS CONHECIDOS: nenhum.
-- PRÓXIMA AÇÃO: ler o log do deploy; com chaves e token nas variáveis do `teste`, usar "Enviar agora para o Google Drive" e provar a restauração (baixar do Drive, abrir com a chave privada e rodar `conferir_restauracao`); depois levar à produção ligando o agendador.
+- ETAPA: E4.3 **CONCLUÍDA** em 2026-10-20. **E4.4 (backup no Google Drive): CANCELADA pelo responsável em 2026-10-20 (D-033).** O backup passa a ser **somente manual**: o Admin baixa o `.zip` pelo botão da tela "Backup" (D-027) e guarda no computador.
+- ÚLTIMO PONTO CONCLUÍDO: código da E4.4 arquivado na branch `e44-drive-arquivado` (commit `9da00cd`, 169/169 no `teste`) e removido da linha principal: a branch `teste` foi igualada à `main` (`e1d2b0b`). Mudança do `teste` preparada (patch `5839dce3`), aguarda o responsável aplicar. A produção nunca recebeu a E4.4.
+- PONTO EXATO ONDE PAROU: aguardando o responsável aplicar o patch `5839dce3` no `teste` e escolher a próxima etapa (proposta: E5, cadastro de contratos).
+- ERROS CONHECIDOS: nenhum. Resíduo inofensivo: a tabela `manutencao_execucaobackup` e o registro da migração `manutencao.0001` ficam órfãos no banco do `teste`.
+- RISCO ACEITO (D-033): sem cópia automática fora do Railway, os dados só estão protegidos pelo que o responsável baixar. Dados reais exigem uma rotina de download definida por ele.
+- PRÓXIMA AÇÃO: aplicar o patch no `teste`; iniciar a E5 (cadastro de contratos) no `teste`.
