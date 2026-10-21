@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block titulo %}Contratos — Gestor de Contratos{% endblock %}
+{% block corpo %}
+{% include "_topo.html" %}
+<main class="conteudo">
+  {% for mensagem in messages %}<p class="aviso" role="alert">{{ mensagem }}</p>{% endfor %}
+  <h1>Contratos</h1>
+  <form method="get" class="busca">
+    <input type="text" name="q" value="{{ q }}" placeholder="Buscar por número, objeto, contratado ou CPF/CNPJ" aria-label="Buscar contratos">
+    <button type="submit" class="botao-simples">Buscar</button>
+    {% if perms.contratos.add_contrato %}<a class="botao-simples destaque" href="{% url 'contratos:novo' %}">Novo contrato</a>{% endif %}
+  </form>
+  {% if object_list %}
+  <table class="tabela">
+    <thead><tr><th>Número</th><th>Objeto</th><th>Contratado</th><th>Valor (R$)</th><th>Vigência final</th></tr></thead>
+    <tbody>
+    {% for c in object_list %}
+      <tr>
+        <td><a href="{% url 'contratos:detalhe' c.pk %}">{{ c.numero_formatado }}</a></td>
+        <td>{{ c.objeto|truncatechars:80 }}</td>
+        <td>{{ c.contratado.razao_social }}</td>
+        <td>{{ c.valor|floatformat:2 }}</td>
+        <td>{{ c.data_fim_vigencia|date:"d/m/Y" }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  {% if is_paginated %}
+  <p class="paginas">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ q|urlencode }}">Anterior</a>{% endif %}
+    Página {{ page_obj.number }} de {{ paginator.num_pages }}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ q|urlencode }}">Próxima</a>{% endif %}
+  </p>
+  {% endif %}
+  {% else %}
+    <p>{% if q %}Nenhum contrato encontrado para a busca.{% else %}Nenhum contrato cadastrado ainda.{% endif %}</p>
+  {% endif %}
+</main>
+{% endblock %}

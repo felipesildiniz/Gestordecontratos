@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}{% if object %}Editar contrato{% else %}Novo contrato{% endif %} — Gestor de Contratos{% endblock %}
+{% block corpo %}
+{% include "_topo.html" %}
+<main class="conteudo">
+  <h1>{% if object %}Editar contrato {{ object.numero_formatado }}{% else %}Novo contrato{% endif %}</h1>
+  <form method="post" class="formulario" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}<p class="erro" role="alert">{{ form.non_field_errors|join:" " }}</p>{% endif %}
+    {% for campo in form %}
+      <div class="campo{% if campo.field.widget.input_type == 'checkbox' %} caixa{% endif %}">
+        {% if campo.field.widget.input_type == 'checkbox' %}
+          {{ campo }} <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+        {% else %}
+          <label for="{{ campo.id_for_label }}">{{ campo.label }}</label>
+          {{ campo }}
+        {% endif %}
+        {% for erro in campo.errors %}<p class="erro" role="alert">{{ erro }}</p>{% endfor %}
+      </div>
+    {% endfor %}
+    <p class="acoes">
+      <button type="submit" class="botao-simples destaque">Salvar</button>
+      <a class="botao-simples" href="{% if object %}{% url 'contratos:detalhe' object.pk %}{% else %}{% url 'contratos:lista' %}{% endif %}">Cancelar</a>
+    </p>
+  </form>
+</main>
+{% endblock %}

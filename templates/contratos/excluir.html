@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block titulo %}Excluir contrato — Gestor de Contratos{% endblock %}
+{% block corpo %}
+{% include "_topo.html" %}
+<main class="conteudo">
+  <h1>Excluir contrato {{ object.numero_formatado }}</h1>
+  <p class="erro" role="alert">Esta exclusão é definitiva: o contrato será apagado de vez, sem como recuperar. Use apenas para cadastro errado.</p>
+  <p>{{ object.objeto|truncatechars:160 }} — {{ object.contratado.razao_social }}</p>
+  <form method="post">
+    {% csrf_token %}
+    <p class="acoes">
+      <button type="submit" class="botao-simples perigo">Sim, excluir definitivamente</button>
+      <a class="botao-simples" href="{% url 'contratos:detalhe' object.pk %}">Cancelar</a>
+    </p>
+  </form>
+</main>
+{% endblock %}

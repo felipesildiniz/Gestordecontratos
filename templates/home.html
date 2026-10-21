@@ -19,6 +19,9 @@
   <h1>Bem-vindo</h1>
   {% if perfil %}
     <p>O sistema está em construção. Os cadastros serão acrescentados nas próximas etapas.</p>
+    {% if perms.contratos.view_contrato %}
+      <p><a href="{% url 'contratos:lista' %}">Contratos</a></p>
+    {% endif %}
     {% if perfil == "Admin" %}
       <p><a href="{% url 'admin:index' %}">Gerenciar usuários</a></p>
       <p><a href="{% url 'backup' %}">Backup dos dados</a></p>

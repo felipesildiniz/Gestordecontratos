@@ -43,6 +43,7 @@ def garantir_perfis(using="default"):
     # Em um banco novo, as permissões dos apps auth e accounts podem ainda não existir.
     create_permissions(apps.get_app_config("auth"), verbosity=0, using=using)
     create_permissions(apps.get_app_config("accounts"), verbosity=0, using=using)
+    create_permissions(apps.get_app_config("contratos"), verbosity=0, using=using)
 
     grupos = {
         nome: Group.objects.using(using).get_or_create(name=nome)[0]
@@ -64,12 +65,19 @@ def garantir_perfis(using="default"):
         content_type__model="dispositivomfa",
         codename__in=["view_dispositivomfa", "change_dispositivomfa"],
     )
+    # Contratos: Admin cadastra, edita e exclui; Consulta só vê (E5).
+    def _contrato(*acoes):
+        return Permission.objects.using(using).filter(
+            content_type__app_label="contratos", content_type__model="contrato",
+            codename__in=[f"{a}_contrato" for a in acoes],
+        )
+
     grupos[ADMIN].permissions.set(
         list(permissoes_usuario) + list(permissoes_bloqueio) + list(permissoes_mfa)
+        + list(_contrato("view", "add", "change", "delete"))
     )
-    # Consulta não tem permissões de edição. As de visualização dos cadastros
-    # serão acrescentadas aqui nas próximas etapas.
-    grupos[CONSULTA].permissions.clear()
+    # Consulta não tem permissões de edição; só as de visualização dos cadastros.
+    grupos[CONSULTA].permissions.set(list(_contrato("view")))
     return grupos
 
 

@@ -98,3 +98,23 @@ input:focus-visible, button:focus-visible, a:focus-visible {
 .qr { display: flex; justify-content: center; margin: 1rem 0; }
 .qr svg { width: 200px; height: 200px; }
 .codigos { columns: 2; padding-left: 1.2rem; font-size: 1.05rem; }
+
+.busca { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1rem 0; }
+.busca input[type="text"] { flex: 1 1 18rem; width: auto; }
+.botao-simples { display: inline-block; padding: .5rem .9rem; border: 1px solid var(--borda); border-radius: 6px; background: var(--cartao); color: var(--texto); font: inherit; text-decoration: none; cursor: pointer; }
+.botao-simples.destaque { background: var(--destaque); border-color: var(--destaque); color: #fff; font-weight: 600; }
+.botao-simples.perigo { background: var(--erro); border-color: var(--erro); color: #fff; font-weight: 600; }
+.acoes { display: flex; flex-wrap: wrap; gap: .5rem; margin: 1rem 0; }
+.paginas { margin-top: 1rem; display: flex; gap: 1rem; align-items: center; }
+.dados { display: grid; grid-template-columns: 14rem 1fr; gap: .4rem 1rem; max-width: 60rem; }
+.dados dt { font-weight: 600; color: var(--suave); }
+.dados dd { margin: 0; }
+.formulario { max-width: 40rem; }
+.formulario .campo { margin-bottom: .25rem; }
+.formulario input[type="date"], .formulario input[type="number"], .formulario select, .formulario textarea {
+  width: 100%; padding: .6rem .75rem; border: 1px solid var(--borda); border-radius: 6px; font: inherit; background: #fff;
+}
+.formulario .caixa { display: flex; align-items: center; gap: .5rem; margin-top: .75rem; }
+.formulario .caixa label { margin: 0; }
+.conteudo input[type="text"] { padding: .6rem .75rem; border: 1px solid var(--borda); border-radius: 6px; font: inherit; width: 100%; }
+@media (max-width: 40rem) { .dados { grid-template-columns: 1fr; } }

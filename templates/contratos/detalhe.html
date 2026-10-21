@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block titulo %}Contrato {{ object.numero_formatado }} — Gestor de Contratos{% endblock %}
+{% block corpo %}
+{% include "_topo.html" %}
+<main class="conteudo">
+  {% for mensagem in messages %}<p class="aviso" role="alert">{{ mensagem }}</p>{% endfor %}
+  <h1>Contrato {{ object.numero_formatado }}</h1>
+  <p class="acoes">
+    <a class="botao-simples" href="{% url 'contratos:lista' %}">Voltar à lista</a>
+    {% if perms.contratos.change_contrato %}<a class="botao-simples destaque" href="{% url 'contratos:editar' object.pk %}">Editar</a>{% endif %}
+    {% if perms.contratos.delete_contrato %}<a class="botao-simples perigo" href="{% url 'contratos:excluir' object.pk %}">Excluir</a>{% endif %}
+  </p>
+  <dl class="dados">
+    <dt>Modalidade</dt><dd>{{ object.modalidade }}</dd>
+    <dt>Objeto</dt><dd>{{ object.objeto|linebreaksbr }}</dd>
+    <dt>Valor</dt><dd>R$ {{ object.valor|floatformat:2 }}</dd>
+    <dt>Contratado</dt><dd>{{ object.contratado.razao_social }} ({{ object.contratado.get_tipo_pessoa_display }}, {{ object.contratado.documento }})</dd>
+    <dt>Data de assinatura</dt><dd>{{ object.data_assinatura|date:"d/m/Y" }}</dd>
+    <dt>Data de publicação</dt><dd>{{ object.data_publicacao|date:"d/m/Y"|default:"não informada" }}</dd>
+    <dt>Início da vigência</dt><dd>{{ object.data_inicio_vigencia|date:"d/m/Y" }}</dd>
+    <dt>Vigência final</dt><dd>{{ object.data_fim_vigencia|date:"d/m/Y" }}{% if object.data_fim_vigencia != object.data_fim_vigencia_original %} (original: {{ object.data_fim_vigencia_original|date:"d/m/Y" }}){% endif %}</dd>
+    <dt>Saúde / Educação</dt><dd>{% if object.envolve_saude %}Saúde{% endif %}{% if object.envolve_saude and object.envolve_educacao %} e {% endif %}{% if object.envolve_educacao %}Educação{% endif %}{% if not object.envolve_saude and not object.envolve_educacao %}não{% endif %}</dd>
+    <dt>Informações complementares</dt><dd>{{ object.informacoes_complementares|linebreaksbr|default:"—" }}</dd>
+    <dt>Cadastro</dt><dd>{{ object.criado_em|date:"d/m/Y H:i" }}{% if object.criado_por %} por {{ object.criado_por.get_username }}{% endif %}; última alteração em {{ object.atualizado_em|date:"d/m/Y H:i" }}{% if object.atualizado_por %} por {{ object.atualizado_por.get_username }}{% endif %}</dd>
+  </dl>
+</main>
+{% endblock %}

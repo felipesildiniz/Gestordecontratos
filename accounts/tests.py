@@ -53,7 +53,7 @@ class PerfisExistemTests(TestCase):
         self.assertIn(ADMIN, nomes)
         self.assertIn(CONSULTA, nomes)
 
-    def test_admin_gerencia_usuarios_e_consulta_nao_tem_permissoes(self):
+    def test_admin_gerencia_usuarios_e_consulta_so_visualiza(self):
         # Garante os perfis mesmo que o sinal de migração não tenha rodado.
         from .perfis import garantir_perfis
 
@@ -67,9 +67,12 @@ class PerfisExistemTests(TestCase):
                 "add_user", "change_user", "delete_user", "view_user",
                 "view_bloqueiologin", "change_bloqueiologin",
                 "view_dispositivomfa", "change_dispositivomfa",
+                "view_contrato", "add_contrato", "change_contrato", "delete_contrato",
             },
         )
-        self.assertEqual(consulta.permissions.count(), 0)
+        self.assertEqual(
+            set(consulta.permissions.values_list("codename", flat=True)), {"view_contrato"}
+        )
 
     def test_garantir_perfis_pode_rodar_varias_vezes(self):
         from .perfis import garantir_perfis

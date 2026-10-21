@@ -1,0 +1,11 @@
+<header class="topo">
+  <strong>Gestor de Contratos</strong>
+  <div class="topo-direita">
+    <a href="{% url 'home' %}">Início</a>
+    {% if perms.contratos.view_contrato %}<a href="{% url 'contratos:lista' %}">Contratos</a>{% endif %}
+    <form method="post" action="{% url 'logout' %}">
+      {% csrf_token %}
+      <button type="submit" class="link">Sair</button>
+    </form>
+  </div>
+</header>
